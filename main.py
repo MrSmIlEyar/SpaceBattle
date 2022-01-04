@@ -36,7 +36,7 @@ def print_text(message, x, y, font_color=(0, 0, 0), font_size=30):
 
 
 def show_menu():
-    menu_bg = pygame.image.load('Menubg.jpg')
+    menu_bg = load_image('Menubg.jpg')
 
     while running:
         for event in pygame.event.get():
@@ -153,4 +153,4 @@ for i in range(10):
     enemys.append(Monster(x, f'monster{random.randint(1, 2)}.png', monster_sprites))
 
 running = True
-start_game()
+show_menu()
