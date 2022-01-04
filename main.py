@@ -36,8 +36,7 @@ def show_menu():
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                end_game()
         screen.blit(menu_bg, (0, 0))
         start_btn = draw(600, 170, 'Начать', 80, 27)
         if start_btn == 1:
@@ -73,6 +72,7 @@ class SpaceShip(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = SpaceShip.image
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = width // 2 - self.image.get_width() // 2
         self.rect.y = height - self.image.get_height() - 25
 
@@ -103,6 +103,7 @@ class Monster(pygame.sprite.Sprite):
         super().__init__(group)
         image = load_image(name)
         self.image = image
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = pos_x
         for i in enemys:
@@ -114,7 +115,10 @@ class Monster(pygame.sprite.Sprite):
     def update(self, v):
         self.rect.y += v
         if self.rect.y >= height - self.image.get_height():
-            end_game()
+            show_menu()
+
+    def ret_x(self):
+        return self.rect.x
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -132,7 +136,6 @@ class Bullet(pygame.sprite.Sprite):
 
 
 def end_game():
-    running = False
     pygame.quit()
     sys.exit()
 
@@ -168,6 +171,14 @@ def start_game():
         monster_sprites.update(v / FPS)
         bullet_sprites.update(v_b / FPS)
         bullet_sprites.draw(screen)
+        m = list(pygame.sprite.groupcollide(monster_sprites, bullet_sprites, True, True).items())
+        for i in range(len(m)):
+            print(m)
+            Monster(m[i][0].ret_x(), f'monster{random.randint(1, 2)}.png', monster_sprites)
+        for i in monster_sprites:
+            if pygame.sprite.collide_mask(i, space_ship):
+                show_menu()
+                break
         clock.tick(FPS)
         pygame.display.update()
 
