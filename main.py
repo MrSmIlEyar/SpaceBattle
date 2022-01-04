@@ -24,7 +24,7 @@ def draw(x, y, message, width, height, font_size=35):
     return 0
 
 
-def print_text(message, x, y, font_color=(0, 0, 0), font_size=30):
+def print_text(message, x, y, font_color=('#DAF4EC'), font_size=30):
     font_type = pygame.font.Font(pygame.font.get_default_font(), font_size)
     text = font_type.render(message, True, font_color)
     screen.blit(text, (x, y))
@@ -32,26 +32,39 @@ def print_text(message, x, y, font_color=(0, 0, 0), font_size=30):
 
 def show_menu():
     menu_bg = load_image('Menubg.jpg')
-
+    butn_image = load_image('fonbutn.png')
+    image = load_image("cursor.png")
+    cur_sprites = pygame.sprite.Group()
+    cur = pygame.sprite.Sprite(cur_sprites)
+    cur.image = image
+    cur.rect = cur.image.get_rect()
+    pygame.mouse.set_visible(False)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                end_game()
+                pygame.quit()
+                quit()
         screen.blit(menu_bg, (0, 0))
-        start_btn = draw(600, 170, 'Начать', 80, 27)
+        screen.blit(butn_image, (565, 130))
+        screen.blit(butn_image, (565, 202))
+        screen.blit(butn_image, (565, 265))
+        screen.blit(butn_image, (565, 327))
+        start_btn = draw(600, 160, 'Начать', 120, 27)
         if start_btn == 1:
             start_game()
         record_btn = draw(600, 230, 'Рекорды', 160, 27)
         if record_btn == 1:
             pass
-        store_btn = draw(600, 290, 'Магазин', 160, 27)
+        store_btn = draw(600, 290, 'Магазин', 140, 27)
         if store_btn == 1:
             pass
-        quit_btn = draw(600, 350, 'Выйти', 70, 27)
+        quit_btn = draw(600, 350, 'Выйти', 115, 27)
         if quit_btn == 1:
             pygame.quit()
             quit()
+        cur_sprites.draw(screen)
         pygame.display.update()
+    return
 
 
 def load_image(name, colorkey=None):
@@ -148,8 +161,7 @@ def start_game():
     space_ship = SpaceShip(space_ship_sprites)
     background = load_image('background.png')
     FPS = 50
-    v = 99
-    v_b = 400
+    v = 1
     clock = pygame.time.Clock()
     roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
     enemys = []
@@ -181,10 +193,31 @@ def start_game():
                 break
         clock.tick(FPS)
         pygame.display.update()
+        if t == 1:
+            t = 0
+            pause()
+            pygame.event.clear()
 
 
 enemys = []
 pos_enemys = []
+def pause():
+    time_spawn = 3
+    font_type = pygame.font.Font(pygame.font.get_default_font(), 50)
+    x = width // 2 - 200
+    while time_spawn > 0:
+        label = font_type.render(str(time_spawn) + '...', True, (255, 255, 255))
+        screen.blit(label, (x, height // 2 - 100))
+        pygame.display.update()
+        x += 120
+        time.sleep(1)
+        time_spawn -= 1
+    font_type = pygame.font.Font(pygame.font.get_default_font(), 70)
+    label = font_type.render('Начали!', True, (255, 255, 255))
+    screen.blit(label, (width // 2 - 140, height // 2))
+    pygame.display.update()
+    time.sleep(0.5)
+    pygame.event.clear()
 
 running = True
 show_menu()
