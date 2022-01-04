@@ -10,11 +10,6 @@ size = width, height = 801, 601
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Battle")
 
-hard = 0.5
-monster_sprites = pygame.sprite.Group()
-space_ship_sprites = pygame.sprite.Group()
-v = 9
-
 
 def draw(x, y, message, width, height, font_size=35):
     mouse = pygame.mouse.get_pos()
@@ -94,8 +89,12 @@ class SpaceShip(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
+    def ret_x(self):
+        return self.rect.x + self.image.get_width() // 2 - 7
 
-SpaceShip(space_ship_sprites)
+    def ret_y(self):
+        return self.rect.y - 25
+
 
 
 class Monster(pygame.sprite.Sprite):
@@ -112,10 +111,24 @@ class Monster(pygame.sprite.Sprite):
                     self.rect.x = random.randint(0, 800 - self.image.get_width() // 2)
         self.rect.y = 0
 
-    def update(self):
+    def update(self, v):
         self.rect.y += v
         if self.rect.y >= height - self.image.get_height():
             end_game()
+
+
+class Bullet(pygame.sprite.Sprite):
+    image = load_image('bullet.png')
+
+    def __init__(self, pos, group):
+        super().__init__(group)
+        self.image = Bullet.image
+        self.rect = self.image.get_rect()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+
+    def update(self, v):
+        self.rect.y -= v
 
 
 def end_game():
@@ -126,31 +139,41 @@ def end_game():
 
 def start_game():
     global running
+    monster_sprites = pygame.sprite.Group()
+    space_ship_sprites = pygame.sprite.Group()
+    bullet_sprites = pygame.sprite.Group()
+    space_ship = SpaceShip(space_ship_sprites)
     background = load_image('background.png')
     FPS = 50
-    v = 1
+    v = 99
+    v_b = 400
     clock = pygame.time.Clock()
+    roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
+    enemys = []
+    for i in range(9):
+        x = roads[i]
+        enemys.append(Monster(x, f'monster{random.randint(1, 2)}.png', monster_sprites))
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         space_ship_sprites.update()
         space_ship_sprites.draw(screen)
         monster_sprites.draw(screen)
-        monster_sprites.update()
+        monster_sprites.update(v / FPS)
+        bullet_sprites.update(v_b / FPS)
+        bullet_sprites.draw(screen)
         clock.tick(FPS)
-        where = -1
         pygame.display.update()
 
 
 enemys = []
 pos_enemys = []
-
-for i in range(10):
-    x = random.randint(0, 730)
-    enemys.append(Monster(x, f'monster{random.randint(1, 2)}.png', monster_sprites))
 
 running = True
 show_menu()
