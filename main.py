@@ -143,6 +143,7 @@ def start_game():
     background = load_image('background.png')
     FPS = 50
     v = 1
+    t = 1
     clock = pygame.time.Clock()
     while running:
         for event in pygame.event.get():
@@ -157,10 +158,31 @@ def start_game():
         clock.tick(FPS)
         where = -1
         pygame.display.update()
+        if t == 1:
+            t = 0
+            pause()
+            pygame.event.clear()
 
 
 enemys = []
 pos_enemys = []
+def pause():
+    time_spawn = 3
+    font_type = pygame.font.Font(pygame.font.get_default_font(), 50)
+    x = width // 2 - 200
+    while time_spawn > 0:
+        label = font_type.render(str(time_spawn) + '...', True, (255, 255, 255))
+        screen.blit(label, (x, height // 2 - 100))
+        pygame.display.update()
+        x += 120
+        time.sleep(1)
+        time_spawn -= 1
+    font_type = pygame.font.Font(pygame.font.get_default_font(), 70)
+    label = font_type.render('Начали!', True, (255, 255, 255))
+    screen.blit(label, (width // 2 - 140, height // 2))
+    pygame.display.update()
+    time.sleep(0.5)
+    pygame.event.clear()
 
 for i in range(10):
     x = random.randint(0, 730)
