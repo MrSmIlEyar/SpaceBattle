@@ -161,7 +161,9 @@ def start_game():
     space_ship = SpaceShip(space_ship_sprites)
     background = load_image('background.png')
     FPS = 50
-    v = 1
+    v = 99
+    t = 1
+    v_b = 400
     clock = pygame.time.Clock()
     roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
     enemys = []
@@ -179,8 +181,8 @@ def start_game():
         screen.blit(background, (0, 0))
         space_ship_sprites.update()
         space_ship_sprites.draw(screen)
-        monster_sprites.draw(screen)
         monster_sprites.update(v / FPS)
+        monster_sprites.draw(screen)
         bullet_sprites.update(v_b / FPS)
         bullet_sprites.draw(screen)
         m = list(pygame.sprite.groupcollide(monster_sprites, bullet_sprites, True, True).items())
