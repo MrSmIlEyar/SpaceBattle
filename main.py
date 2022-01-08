@@ -17,6 +17,12 @@ pygame.mixer.music.play(-1)
 bullet_sound = pygame.mixer.Sound('data/laser.wav')
 bullet_sound.set_volume(0.1)
 
+def load_font(name):
+    fullname = os.path.join('data', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с шрифтом '{fullname}' не найден")
+        sys.exit()
+    return fullname
 
 def draw(x, y, message, width, height, font_size=35):
     mouse = pygame.mouse.get_pos()
@@ -30,12 +36,36 @@ def draw(x, y, message, width, height, font_size=35):
         print_text(message, x, y, font_size=font_size)
     return 0
 
+score = 0
+gayka_score = 0
+with open('data/gaykascore.txt') as f:
+    all_gayka_score = int(f.readline())
+print(all_gayka_score)
 
-def print_text(message, x, y, font_color=('#DAF4EC'), font_size=30):
-    font_type = pygame.font.Font(pygame.font.get_default_font(), font_size)
+
+def show_gayka_score():
+    global gayka_score
+    font_type = pygame.font.Font(load_font('font.ttf'), 35)
+    text_score = font_type.render(str(gayka_score), True, (200, 200, 200))
+    screen.blit(text_score, (37, 38))
+
+def print_text(message, x, y, font_color=('#DAF4EC'), font_size=35):
+    font_type = pygame.font.Font(load_font('font.ttf'), font_size)
     text = font_type.render(message, True, font_color)
     screen.blit(text, (x, y))
 
+def game_over(gayka_score):
+    global score
+    record = 0
+    with open('data/results.txt', 'r') as f:
+        s = list(map(int, f.readlines()))
+        if score > s[-1]:
+            record = 1
+        s.append(score)
+        s.sort()
+    with open('data/results.txt', 'w') as f:
+        for i in s:
+            f.write(str(i) + '\n')
 
 def show_menu():
     menu_bg = load_image('Menubg.jpg')
@@ -54,7 +84,7 @@ def show_menu():
             if event.type == pygame.MOUSEMOTION:
                 cur.rect.topleft = event.pos
         screen.blit(menu_bg, (0, 0))
-        screen.blit(butn_image, (565, 130))
+        screen.blit(butn_image, (565, 135))
         screen.blit(butn_image, (565, 202))
         screen.blit(butn_image, (565, 265))
         screen.blit(butn_image, (565, 327))
@@ -255,16 +285,25 @@ class AnimatedDeath(pygame.sprite.Sprite):
         self.image = load_image(name)
 
 
+def show_score():
+    global score
+    font_type = pygame.font.Font(load_font('font.ttf'), 40)
+    text_score = font_type.render(str(score), True, (255, 255, 255))
+    screen.blit(text_score, (1, 0))
 def start_game():
-    global running
+    global running,score,gayka_score, all_gayka_score
+    score = 0
+    gayka_score = 0
     monster_sprites = pygame.sprite.Group()
     space_ship_sprites = pygame.sprite.Group()
     bullet_sprites = pygame.sprite.Group()
+    gaykaim = load_image('gayka.png')
     death_sprites = pygame.sprite.Group()
     meteor_sprites = pygame.sprite.Group()
     bonus_sprites = pygame.sprite.Group()
     space_ship = SpaceShip(space_ship_sprites)
     background = load_image('background.png')
+    gayka_sprites = pygame.sprite.Group()
     score = 0
     death = False
     stage_of_death = 1
@@ -309,10 +348,26 @@ def start_game():
         bullet_sprites.draw(screen)
         meteor_sprites.draw(screen)
         meteor_sprites.update()
+        gayka_sprites.draw(screen)
+        gayka_sprites.update()
         m = list(pygame.sprite.groupcollide(monster_sprites, bullet_sprites, True, True).items())
         for i in range(len(m)):
             score += 1
             Monster(m[i][0].ret_x(), f'monster{random.randint(1, 2)}.png', monster_sprites)
+            if score % 10 == 0 and score != 0:
+                gayka = Gayka(random.choice(roads), gayka_sprites)
+        for i in monster_sprites:
+            if pygame.sprite.collide_mask(i, space_ship):
+                show_menu()
+                break
+        show_score()
+        screen.blit(gaykaim, (1, 40))
+        show_gayka_score()
+        if pygame.sprite.groupcollide(gayka_sprites, space_ship_sprites, True, False):
+            gayka_score += 1
+            all_gayka_score += 1
+            with open('data/gaykascore.txt', 'w') as f:
+                f.write(str(all_gayka_score))
             if score % 25 == 0 and score != 0:
                 meteor = Meteor(random.choice(roads), meteor_sprites)
                 meteor_active = True
@@ -398,8 +453,8 @@ pos_enemys = []
 
 def pause():
     time_spawn = 3
-    font_type = pygame.font.Font(pygame.font.get_default_font(), 50)
-    x = width // 2 - 200
+    font_type = pygame.font.Font(load_font('font.ttf'), 50)
+    x = width // 2 - 155
     while time_spawn > 0:
         label = font_type.render(str(time_spawn), True, (255, 255, 255))
         screen.blit(label, (x, height // 2 - 100))
@@ -407,12 +462,32 @@ def pause():
         x += 120
         time.sleep(1)
         time_spawn -= 1
-    font_type = pygame.font.Font(pygame.font.get_default_font(), 70)
+    font_type = pygame.font.Font(load_font('font.ttf'), 70)
     label = font_type.render('Начали!', True, (255, 255, 255))
-    screen.blit(label, (width // 2 - 140, height // 2))
+    screen.blit(label, (width // 2 - 145, height // 2))
     pygame.display.update()
     time.sleep(0.5)
     pygame.event.clear()
+
+class Gayka(pygame.sprite.Sprite):
+    image = load_image('gayka.png')
+    v = 1
+
+    def __init__(self, x, group):
+        super().__init__(group)
+        self.image = Gayka.image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = 0
+
+    def update(self):
+        self.rect.y += Gayka.v
+
+    def x(self):
+        return int(self.rect.x)
+
+    def y(self):
+        return int(self.rect.y)
 
 
 running = True
