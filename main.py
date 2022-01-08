@@ -10,7 +10,14 @@ size = width, height = 801, 601
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Battle")
 space_ship_skin = 'space_ship1.png'
-
+dict_bought_ships = {}
+with open('data/bougth_ships') as f:
+    for line in f.readlines():
+        line = line.split()
+        dict_bought_ships[line[0]] = line[1]
+for i in dict_bought_ships.keys():
+    if dict_bought_ships[i] == '2':
+        space_ship_skin = f'space_ship{i}.png'
 pygame.mixer.music.load('data/background.wav')
 pygame.mixer.music.set_volume(0.01)
 pygame.mixer.music.play(-1)
@@ -24,7 +31,7 @@ def load_font(name):
         sys.exit()
     return fullname
 
-def draw(x, y, message, width, height, font_size=35):
+def draw(x, y, message, width, height, font_size=35,font_color = (255,255,255)):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
     if x < mouse[0] < x + width and y < mouse[1] < y + height:
@@ -33,7 +40,7 @@ def draw(x, y, message, width, height, font_size=35):
         if click[0] == 1:
             return 1
     else:
-        print_text(message, x, y, font_size=font_size)
+        print_text(message, x, y, font_size=font_size,font_color=font_color)
     return 0
 
 score = 0
@@ -53,6 +60,133 @@ def print_text(message, x, y, font_color=('#DAF4EC'), font_size=35):
     font_type = pygame.font.Font(load_font('font.ttf'), font_size)
     text = font_type.render(message, True, font_color)
     screen.blit(text, (x, y))
+
+def shop():
+    global space_ship_skin,all_gayka_score,dict_bought_ships
+    bgshop_image = load_image('ShopBg.jpg')
+    image = load_image("cursor.png")
+    defolt_space_ship = load_image('space_ship1.png')
+    gaykaim = load_image('gayka.png')
+    cur_sprites = pygame.sprite.Group()
+    cur = pygame.sprite.Sprite(cur_sprites)
+    cur.image = image
+    cur.rect = cur.image.get_rect()
+    pygame.mouse.set_visible(False)
+    clock = pygame.time.Clock()
+    space_ship2 = load_image('space_ship2.png')
+    space_ship3 = load_image('space_ship3.png')
+    space_ship4 = load_image('space_ship4.png')
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEMOTION:
+                cur.rect.topleft = event.pos
+        with open('data/bougth_ships') as f:
+            for line in f.readlines():
+                line = line.split()
+                dict_bought_ships[line[0]] = line[1]
+        color = pygame.Color('#C0F56E')
+        screen.fill((0, 0, 0))
+        screen.blit(bgshop_image, (0, 0))
+        for x in range(120,521,200):
+            color = pygame.Color('#C0F56E')
+            if dict_bought_ships[str(x//200+1)] == '2':
+                color = pygame.Color('#8EEB00')
+            pygame.draw.rect(screen, color, (x, 50, 160, 200), border_radius=12)
+        if dict_bought_ships['4'] == '2':
+            color = pygame.Color('#8EEB00')
+        else:
+            color = pygame.Color('#C0F56E')
+        pygame.draw.rect(screen, color, (120, 300, 160, 200), border_radius=12)
+        font_type = pygame.font.Font(load_font('font.ttf'), 37)
+        text_score = font_type.render(str(all_gayka_score), True, (200, 200, 200))
+        screen.blit(text_score, (37, 0))
+        screen.blit(gaykaim, (1, 3))
+        back_btn = draw(10, 570, 'Назад', 60, 27,font_size=20)
+        if back_btn == 1:
+            show_menu()
+        if dict_bought_ships['1'] == '0':
+            btn_1 = draw(125, 195, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_1 == 1:
+                space_ship_skin = 'space_ship1.png'
+                dict_bought_ships['1'] = '2'
+                delete_vybran('1')
+        else:
+            space_ship_skin = 'space_ship1.png'
+            btn_1 = draw(125, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+        screen.blit(defolt_space_ship, (165, 70))
+        if dict_bought_ships['2'] == '1':
+            btn_2 = draw(360, 195, '150', 100, 27, font_size=35,font_color='#000000')
+            screen.blit(gaykaim,(430,197))
+            if btn_2 == 1 and all_gayka_score>=150:
+                with open('data/gaykascore.txt', 'w') as f:
+                    f.write(str(all_gayka_score-150))
+                    all_gayka_score-=150
+                dict_bought_ships['2'] = '0'
+        elif dict_bought_ships['2'] == '0':
+            btn_2 = draw(325, 195, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_2 ==1:
+                space_ship_skin ='space_ship2.png'
+                dict_bought_ships['2'] = '2'
+                delete_vybran('2')
+        elif dict_bought_ships['2']=='2':
+            space_ship_skin = 'space_ship2.png'
+            btn_2 = draw(325, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+        screen.blit(space_ship2,(370,70))
+
+        if dict_bought_ships['3'] == '1':
+            btn_3 = draw(555, 195, '300', 100, 27, font_size=35,font_color='#000000')
+            screen.blit(gaykaim,(630,197))
+            if btn_3 == 1 and all_gayka_score>=300:
+                with open('data/gaykascore.txt', 'w') as f:
+                    f.write(str(all_gayka_score-300))
+                    all_gayka_score-=300
+                dict_bought_ships['3'] = '0'
+        elif dict_bought_ships['3'] == '0':
+            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_3 ==1:
+                space_ship_skin ='space_ship3.png'
+                dict_bought_ships['3'] = '2'
+                delete_vybran('3')
+        elif dict_bought_ships['3']=='2':
+            space_ship_skin = 'space_ship3.png'
+            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+        screen.blit(space_ship3,(570,70))
+
+        if dict_bought_ships['4'] == '1':
+            btn_3 = draw(160, 445, '500', 100, 27, font_size=35,font_color='#000000')
+            screen.blit(gaykaim,(235,447))
+            if btn_3 == 1 and all_gayka_score>=500:
+                with open('data/gaykascore.txt', 'w') as f:
+                    f.write(str(all_gayka_score-500))
+                    all_gayka_score-=500
+                dict_bought_ships['4'] = '0'
+        elif dict_bought_ships['4'] == '0':
+            btn_3 = draw(125, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_3 ==1:
+                space_ship_skin ='space_ship4.png'
+                dict_bought_ships['4'] = '2'
+                delete_vybran('4')
+        elif dict_bought_ships['4']=='2':
+            space_ship_skin = 'space_ship4.png'
+            btn_3 = draw(125, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+        screen.blit(space_ship4,(165,320))
+        with open('data/bougth_ships','w') as f1:
+            for k in dict_bought_ships.keys():
+                f1.write(f'{k} {dict_bought_ships[k]}'+'\n')
+
+
+        cur_sprites.draw(screen)
+        pygame.display.update()
+
+def delete_vybran(n):
+    global dict_bought_ships
+    for i in dict_bought_ships.keys():
+        if i != n:
+            if dict_bought_ships[i] == '2':
+                dict_bought_ships[i] = '0'
 
 def game_over(gayka_score):
     global score
@@ -96,7 +230,7 @@ def show_menu():
             pass
         store_btn = draw(600, 290, 'Магазин', 140, 27)
         if store_btn == 1:
-            pass
+            shop()
         quit_btn = draw(600, 350, 'Выйти', 115, 27)
         if quit_btn == 1:
             pygame.quit()
@@ -359,10 +493,6 @@ def start_game():
             if score % 25 == 0 and score != 0:
                 meteor = Meteor(random.choice(roads), meteor_sprites)
                 meteor_active = True
-        for i in monster_sprites:
-            if pygame.sprite.collide_mask(i, space_ship):
-                show_menu()
-                break
         show_score()
         screen.blit(gaykaim, (1, 40))
         show_gayka_score()
