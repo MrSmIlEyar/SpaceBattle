@@ -10,6 +10,12 @@ size = width, height = 801, 601
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Battle")
 
+def load_font(name):
+    fullname = os.path.join('data', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с шрифтом '{fullname}' не найден")
+        sys.exit()
+    return fullname
 
 def draw(x, y, message, width, height, font_size=35):
     mouse = pygame.mouse.get_pos()
@@ -24,8 +30,8 @@ def draw(x, y, message, width, height, font_size=35):
     return 0
 
 
-def print_text(message, x, y, font_color=('#DAF4EC'), font_size=30):
-    font_type = pygame.font.Font(pygame.font.get_default_font(), font_size)
+def print_text(message, x, y, font_color=('#DAF4EC'), font_size=35):
+    font_type = pygame.font.Font(load_font('font.ttf'), font_size)
     text = font_type.render(message, True, font_color)
     screen.blit(text, (x, y))
 
@@ -44,8 +50,10 @@ def show_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            if event.type == pygame.MOUSEMOTION:
+                cur.rect.topleft = event.pos
         screen.blit(menu_bg, (0, 0))
-        screen.blit(butn_image, (565, 130))
+        screen.blit(butn_image, (565, 135))
         screen.blit(butn_image, (565, 202))
         screen.blit(butn_image, (565, 265))
         screen.blit(butn_image, (565, 327))
