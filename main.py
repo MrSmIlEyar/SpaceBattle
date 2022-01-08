@@ -356,6 +356,9 @@ def start_game():
             Monster(m[i][0].ret_x(), f'monster{random.randint(1, 2)}.png', monster_sprites)
             if score % 10 == 0 and score != 0:
                 gayka = Gayka(random.choice(roads), gayka_sprites)
+            if score % 25 == 0 and score != 0:
+                meteor = Meteor(random.choice(roads), meteor_sprites)
+                meteor_active = True
         for i in monster_sprites:
             if pygame.sprite.collide_mask(i, space_ship):
                 show_menu()
@@ -368,9 +371,6 @@ def start_game():
             all_gayka_score += 1
             with open('data/gaykascore.txt', 'w') as f:
                 f.write(str(all_gayka_score))
-            if score % 25 == 0 and score != 0:
-                meteor = Meteor(random.choice(roads), meteor_sprites)
-                meteor_active = True
         if meteor_active:
             xbonus = meteor.x()
             ybonus = meteor.y()
@@ -437,8 +437,12 @@ def start_game():
                 if i[1] == 2:
                     shield_on_space_ship = True
                     space_ship.shield()
+                font_type = pygame.font.Font(load_font('font.ttf'), 25)
                 for j in range(len(bonuces_on_spaceship)):
+                    time_bonus = font_type.render(str(15 - int(time_now - bonuces_on_spaceship[j][-1])), True,
+                                          (255, 255, 255))
                     screen.blit(bonuces_on_spaceship[j][0].ret_image(), place_for_blit_bonuces_on_spaceship[j][0])
+                    screen.blit(time_bonus, place_for_blit_bonuces_on_spaceship[j][1])
         clock.tick(FPS)
         pygame.display.update()
         if t == 1:
