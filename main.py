@@ -44,6 +44,8 @@ def show_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            if event.type == pygame.MOUSEMOTION:
+                cur.rect.topleft = event.pos
         screen.blit(menu_bg, (0, 0))
         screen.blit(butn_image, (565, 130))
         screen.blit(butn_image, (565, 202))
@@ -62,6 +64,7 @@ def show_menu():
         if quit_btn == 1:
             pygame.quit()
             quit()
+        cur_sprites.update()
         cur_sprites.draw(screen)
         pygame.display.update()
     return
@@ -108,6 +111,11 @@ class SpaceShip(pygame.sprite.Sprite):
     def ret_y(self):
         return self.rect.y - 25
 
+    def x(self):
+        return self.rect.x
+
+    def y(self):
+        return self.rect.y
 
 
 class Monster(pygame.sprite.Sprite):
@@ -153,13 +161,35 @@ def end_game():
     sys.exit()
 
 
+def ship_death(x, y, group):
+    AnimatedDeath(1, x, y, group)
+
+
+class AnimatedDeath(pygame.sprite.Sprite):
+    def __init__(self, stage, x, y, group):
+        super().__init__(group)
+        name = os.path.join('animate_ship_death', f'animate_death_{stage}.png')
+        self.image = load_image(name)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def update(self, stage):
+        name = os.path.join('animate_ship_death', f'animate_death_{stage}.png')
+        self.image = load_image(name)
+
+
 def start_game():
     global running
     monster_sprites = pygame.sprite.Group()
     space_ship_sprites = pygame.sprite.Group()
     bullet_sprites = pygame.sprite.Group()
+    death_sprites = pygame.sprite.Group()
     space_ship = SpaceShip(space_ship_sprites)
     background = load_image('background.png')
+    death = False
+    stage_of_death = 1
+    death_ship_FPS = 60
     FPS = 50
     v = 99
     t = 1
@@ -190,9 +220,19 @@ def start_game():
             print(m)
             Monster(m[i][0].ret_x(), f'monster{random.randint(1, 2)}.png', monster_sprites)
         for i in monster_sprites:
-            if pygame.sprite.collide_mask(i, space_ship):
-                show_menu()
+            if pygame.sprite.collide_mask(i, space_ship) and not death:
+                space_ship.kill()
+                death = True
+                v = 0
+                ship_death(space_ship.x(), space_ship.y(), death_sprites)
                 break
+        if death:
+            death_sprites.draw(screen)
+            death_sprites.update(stage_of_death)
+            clock.tick(death_ship_FPS)
+            stage_of_death += 1
+            if stage_of_death == 15:
+                show_menu()
         clock.tick(FPS)
         pygame.display.update()
         if t == 1:
@@ -203,6 +243,8 @@ def start_game():
 
 enemys = []
 pos_enemys = []
+
+
 def pause():
     time_spawn = 3
     font_type = pygame.font.Font(pygame.font.get_default_font(), 50)
@@ -220,6 +262,7 @@ def pause():
     pygame.display.update()
     time.sleep(0.5)
     pygame.event.clear()
+
 
 running = True
 show_menu()
