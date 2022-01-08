@@ -33,7 +33,7 @@ def load_font(name):
     return fullname
 
 
-def draw(x, y, message, width, height, font_size=35):
+def draw(x, y, message, width, height, font_size=35, font_color = (255,255,255)):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
     if x < mouse[0] < x + width and y < mouse[1] < y + height:
@@ -193,21 +193,9 @@ def delete_vybran(n):
             if dict_bought_ships[i] == '2':
                 dict_bought_ships[i] = '0'
 
-def game_over(gayka_score):
-    global score
-    record = 0
-    with open('data/results.txt', 'r') as f:
-        s = list(map(int, f.readlines()))
-        if score > s[-1]:
-            record = 1
-        s.append(score)
-        s.sort()
-    with open('data/results.txt', 'w') as f:
-        for i in s:
-            f.write(str(i) + '\n')
-
 
 def show_menu():
+    pygame.event.clear()
     menu_bg = load_image('Menubg.jpg')
     butn_image = load_image('fonbutn.png')
     image = load_image("cursor.png")
@@ -215,6 +203,7 @@ def show_menu():
     cur = pygame.sprite.Sprite(cur_sprites)
     cur.image = image
     cur.rect = cur.image.get_rect()
+    screen.blit(cur.image, (450, 120))
     pygame.mouse.set_visible(False)
     while running:
         for event in pygame.event.get():
@@ -304,7 +293,7 @@ def game_over(gayka_score):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 end_game()
-            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.KEYDOWN:
                 if v3 != 0 or v2 != 0 or v1 != 0:
                     v3 = v2 = v1 = v4 = 0
                     rect2.y = 150
@@ -535,6 +524,7 @@ def start_game():
     t = 1
     v_b = 400
     Meteor.v = 10
+    Bonus.v = 10
     clock = pygame.time.Clock()
     roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
     enemys = []
