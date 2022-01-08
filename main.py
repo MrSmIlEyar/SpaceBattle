@@ -9,6 +9,13 @@ pygame.init()
 size = width, height = 801, 601
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Battle")
+space_ship_skin = 'space_ship1.png'
+
+pygame.mixer.music.load('data/background.wav')
+pygame.mixer.music.set_volume(0.01)
+pygame.mixer.music.play(-1)
+bullet_sound = pygame.mixer.Sound('data/laser.wav')
+bullet_sound.set_volume(0.1)
 
 
 def draw(x, y, message, width, height, font_size=35):
@@ -80,14 +87,65 @@ def load_image(name, colorkey=None):
     return image
 
 
-class SpaceShip(pygame.sprite.Sprite):
-    image = load_image('spaceship.png')
+class Meteor(pygame.sprite.Sprite):
+    image = load_image('meteor.png')
+    v = 1
+
+    def __init__(self, x, group):
+        super().__init__(group)
+        self.image = Meteor.image
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = 0
+
+    def update(self):
+        self.rect.y += Meteor.v
+
+    def x(self):
+        return int(self.rect.x)
+
+    def y(self):
+        return int(self.rect.y)
+
+
+class Bonus(pygame.sprite.Sprite):
     v = 10
+
+    def __init__(self, x, y, name, type, group):
+        super().__init__(group)
+        self.image = load_image(name)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.type = type
+        self.timing = 0
+
+    def update(self):
+        self.rect.y += Bonus.v
+
+    def ret_type(self):
+        return int(self.type)
+
+    def get_timing(self, other):
+        self.timing = other
+
+    def ret_timing(self):
+        return self.timing
+
+    def ret_image(self):
+        return pygame.transform.scale(self.image, (self.image.get_width() // 2, self.image.get_height() // 2))
+
+
+class SpaceShip(pygame.sprite.Sprite):
+    image_with_shield = load_image('spaceship_with_shield.png')
+    v = 15
 
     def __init__(self, group):
         super().__init__(group)
-        self.image = SpaceShip.image
+        self.image = load_image(space_ship_skin)
         self.rect = self.image.get_rect()
+        self.type = 1
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = width // 2 - self.image.get_width() // 2
         self.rect.y = height - self.image.get_height() - 25
@@ -95,15 +153,21 @@ class SpaceShip(pygame.sprite.Sprite):
     def update(self):
         self.v = 0
         keystate = pygame.key.get_pressed()
-        if keystate[pygame.K_LEFT]:
+        if keystate[pygame.K_LEFT] or keystate[pygame.K_a]:
             self.v = -SpaceShip.v
-        if keystate[pygame.K_RIGHT]:
+        if keystate[pygame.K_RIGHT] or keystate[pygame.K_d]:
             self.v = SpaceShip.v
         self.rect.x += self.v
-        if self.rect.right > width:
-            self.rect.right = width
-        if self.rect.left < 0:
-            self.rect.left = 0
+        if self.rect.x > width - self.image.get_width():
+            self.rect.x = width - self.image.get_width()
+        if self.rect.x < 0:
+            self.rect.x = 0
+
+    def x(self):
+        return self.rect.x
+
+    def y(self):
+        return self.rect.y
 
     def ret_x(self):
         return self.rect.x + self.image.get_width() // 2 - 7
@@ -111,11 +175,23 @@ class SpaceShip(pygame.sprite.Sprite):
     def ret_y(self):
         return self.rect.y - 25
 
-    def x(self):
-        return self.rect.x
+    def ret_x_for_double_bullets_1(self):
+        if self.type == 1:
+            return self.rect.x + 5
+        return self.rect.x + 25
 
-    def y(self):
-        return self.rect.y
+    def ret_x_for_double_bullets_2(self):
+        if self.type == 1:
+            return self.rect.x + self.image.get_width() - 20
+        return self.rect.x + self.image.get_width() - 40
+
+    def shield(self):
+        self.image = SpaceShip.image_with_shield
+        self.type = 2
+
+    def shield_off(self):
+        self.image = load_image(space_ship_skin)
+        self.type = 1
 
 
 class Monster(pygame.sprite.Sprite):
@@ -185,8 +261,11 @@ def start_game():
     space_ship_sprites = pygame.sprite.Group()
     bullet_sprites = pygame.sprite.Group()
     death_sprites = pygame.sprite.Group()
+    meteor_sprites = pygame.sprite.Group()
+    bonus_sprites = pygame.sprite.Group()
     space_ship = SpaceShip(space_ship_sprites)
     background = load_image('background.png')
+    score = 0
     death = False
     stage_of_death = 1
     death_ship_FPS = 60
@@ -194,9 +273,17 @@ def start_game():
     v = 99
     t = 1
     v_b = 400
+    Meteor.v = 10
     clock = pygame.time.Clock()
     roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
     enemys = []
+    bonuces = []
+    shield_on_space_ship = False
+    double_bullets = False
+    bonuces_on_spaceship = []
+    place_for_blit_bonuces_on_spaceship = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
+    name_bonuces = [('bonus_2x.png', 1), ('shild.png', 2)]
+    meteor_active = False
     for i in range(9):
         x = roads[i]
         enemys.append(Monster(x, f'monster{random.randint(1, 2)}.png', monster_sprites))
@@ -206,7 +293,12 @@ def start_game():
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
+                    if double_bullets:
+                        Bullet((space_ship.ret_x_for_double_bullets_1(), space_ship.ret_y()), bullet_sprites)
+                        Bullet((space_ship.ret_x_for_double_bullets_2(), space_ship.ret_y()), bullet_sprites)
+                    else:
+                        Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
+                    bullet_sound.play()
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         space_ship_sprites.update()
@@ -215,17 +307,38 @@ def start_game():
         monster_sprites.draw(screen)
         bullet_sprites.update(v_b / FPS)
         bullet_sprites.draw(screen)
+        meteor_sprites.draw(screen)
+        meteor_sprites.update()
         m = list(pygame.sprite.groupcollide(monster_sprites, bullet_sprites, True, True).items())
         for i in range(len(m)):
-            print(m)
+            score += 1
             Monster(m[i][0].ret_x(), f'monster{random.randint(1, 2)}.png', monster_sprites)
-        for i in monster_sprites:
-            if pygame.sprite.collide_mask(i, space_ship) and not death:
-                space_ship.kill()
-                death = True
-                v = 0
-                ship_death(space_ship.x(), space_ship.y(), death_sprites)
-                break
+            if score % 25 == 0 and score != 0:
+                meteor = Meteor(random.choice(roads), meteor_sprites)
+                meteor_active = True
+        if meteor_active:
+            xbonus = meteor.x()
+            ybonus = meteor.y()
+        if pygame.sprite.groupcollide(meteor_sprites, bullet_sprites, True, True):
+            name, type_b = random.choice(name_bonuces)
+            bon = Bonus(xbonus + 10, ybonus + 10, name, type_b, bonus_sprites)
+            meteor_active = False
+            bonuces.append((bon, bon.ret_type()))
+        bonus_sprites.draw(screen)
+        bonus_sprites.update()
+        if shield_on_space_ship:
+            if pygame.sprite.groupcollide(monster_sprites, space_ship_sprites, True, False):
+                mon = Monster(random.choice(roads), f'monster{random.randint(1, 2)}.png', monster_sprites)
+                monster_sprites.add(mon)
+        else:
+            for i in monster_sprites:
+                if pygame.sprite.collide_mask(i, space_ship) and not death:
+                    space_ship.kill()
+                    death = True
+                    Meteor.v = 0
+                    v = 0
+                    ship_death(space_ship.x(), space_ship.y(), death_sprites)
+                    break
         if death:
             death_sprites.draw(screen)
             death_sprites.update(stage_of_death)
@@ -233,6 +346,44 @@ def start_game():
             stage_of_death += 1
             if stage_of_death == 15:
                 show_menu()
+        if pygame.sprite.groupcollide(bullet_sprites, meteor_sprites, True, True):
+            pass
+        if pygame.sprite.groupcollide(bonus_sprites, space_ship_sprites, True, False):
+            pass
+        for i in bonuces:
+            if pygame.sprite.spritecollide(i[0], space_ship_sprites, False):
+                q = time.time()
+                w = [j[1] for j in bonuces_on_spaceship]
+                if i[1] in w:
+                    bonuces_on_spaceship[w.index(i[1])] = (i[0], i[1], q)
+                else:
+                    bonuces_on_spaceship.append((i[0], i[1], q))
+                del bonuces[bonuces.index(i)]
+        for i in meteor_sprites:
+            if pygame.sprite.collide_mask(space_ship, i):
+                if not shield_on_space_ship:
+                    space_ship.kill()
+                    death = True
+                    Meteor.v = 0
+                    v = 0
+                    ship_death(space_ship.x(), space_ship.y(), death_sprites)
+        time_now = time.time()
+        for i in bonuces_on_spaceship:
+            if time_now - i[-1] > 15.0:
+                if i[1] == 1:
+                    double_bullets = False
+                elif i[1] == 2:
+                    space_ship.shield_off()
+                    shield_on_space_ship = False
+                del bonuces_on_spaceship[bonuces_on_spaceship.index(i)]
+            else:
+                if i[1] == 1:
+                    double_bullets = True
+                if i[1] == 2:
+                    shield_on_space_ship = True
+                    space_ship.shield()
+                for j in range(len(bonuces_on_spaceship)):
+                    screen.blit(bonuces_on_spaceship[j][0].ret_image(), place_for_blit_bonuces_on_spaceship[j][0])
         clock.tick(FPS)
         pygame.display.update()
         if t == 1:
@@ -250,7 +401,7 @@ def pause():
     font_type = pygame.font.Font(pygame.font.get_default_font(), 50)
     x = width // 2 - 200
     while time_spawn > 0:
-        label = font_type.render(str(time_spawn) + '...', True, (255, 255, 255))
+        label = font_type.render(str(time_spawn), True, (255, 255, 255))
         screen.blit(label, (x, height // 2 - 100))
         pygame.display.update()
         x += 120
