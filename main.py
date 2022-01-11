@@ -563,6 +563,8 @@ def start_game():
                     else:
                         Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
                     bullet_sound.play()
+                elif event.key == pygame.K_ESCAPE:
+                    pause_in_game()
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         space_ship_sprites.update()
@@ -677,6 +679,39 @@ def start_game():
 enemys = []
 pos_enemys = []
 
+def pause_in_game():
+    t=True
+    image = load_image("cursor.png")
+    cur_sprites = pygame.sprite.Group()
+    cur = pygame.sprite.Sprite(cur_sprites)
+    cur.image = image
+    cur.rect = cur.image.get_rect()
+    pygame.mouse.set_visible(False)
+    imagebg = load_image('bg_for_game_over.png')
+    while t:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEMOTION:
+                cur.rect.topleft = event.pos
+        screen.blit(imagebg,(0,0))
+        color = pygame.Color('#007143')
+        pygame.draw.rect(screen, color, (245, 170, 310, 260))
+        butn_color =  pygame.Color('#67E46F')
+        pygame.draw.rect(screen, color, (245, 170, 310, 260))
+        # pygame.draw.rect(screen, butn_color, (255, 255, 280, 50))
+        btn_back = draw(265, 265, 'Продолжить', 270, 35,font_size=40)
+        if btn_back == 1:
+            t = False
+        btn_menu = draw(345, 340, 'Меню', 120, 35, font_size=40)
+        if btn_menu == 1:
+            show_menu()
+        font_type = pygame.font.Font(load_font('font.ttf'), 50)
+        text_score = font_type.render('Пауза', True, (255, 255, 255))
+        screen.blit(text_score, (320, 175))
+        cur_sprites.draw(screen)
+        pygame.display.update()
 
 def pause():
     time_spawn = 3
