@@ -565,6 +565,8 @@ def start_game():
                     bullet_sound.play()
                 elif event.key == pygame.K_ESCAPE:
                     pause_in_game()
+                    t = 1
+                    pygame.event.clear()
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         space_ship_sprites.update()
