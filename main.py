@@ -742,7 +742,7 @@ def start_game():
                     astronavts.append(astr)
                 if score % 5 == 0 and score != 0:
                     k = random.randint(1, 10)
-                    if k != 5:
+                    if k > 5:
                         meteor = Meteor(random.choice(roads), meteor_sprites)
                         meteor_active = True
                     else:
@@ -752,7 +752,7 @@ def start_game():
                     boss_mode_first = True
                 if score % 10 == 0 and score != 0:
                     Gayka(random.choice(roads), gayka_sprites)
-                if score % 10 == 0:
+                if score % 200 == 0:
                     rocket_rain = True
         if len(enemys) == 0 and not rocket_rain_begin:
             rocket_rain_begin = True
