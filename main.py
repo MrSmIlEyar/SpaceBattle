@@ -229,9 +229,9 @@ def show_menu():
         start_btn = draw(600, 160, 'Начать', 120, 27)
         if start_btn == 1:
             start_game()
-        record_btn = draw(600, 230, 'Рекорды', 160, 27)
+        record_btn = draw(600, 225, 'Данные', 128, 27)
         if record_btn == 1:
-            pass
+            statistick()
         store_btn = draw(600, 290, 'Магазин', 140, 27)
         if store_btn == 1:
             shop()
@@ -244,6 +244,56 @@ def show_menu():
         pygame.display.update()
     return
 
+def statistick():
+    bgstatistick_image = load_image('statistickFon.jpg')
+    image = load_image("cursor.png")
+    defolt_space_ship = load_image('space_ship1.png')
+    gaykaim = load_image('gayka.png')
+    cur_sprites = pygame.sprite.Group()
+    cur = pygame.sprite.Sprite(cur_sprites)
+    cur.image = image
+    cur.rect = cur.image.get_rect()
+    pygame.mouse.set_visible(False)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEMOTION:
+                cur.rect.topleft = event.pos
+        screen.fill((0, 0, 0))
+        screen.blit(bgstatistick_image, (0, 0))
+        back_btn = draw(10, 570, 'Назад', 60, 27, font_size=20)
+        if back_btn == 1:
+            show_menu()
+        font_type = pygame.font.Font(load_font('font.ttf'), 65)
+        label = font_type.render('Ваши результаты', True, (255, 255, 255))
+        screen.blit(label, (110,5))
+        font_type = pygame.font.Font(load_font('font.ttf'), 30)
+        label = font_type.render('Максимально очков набрано:', True, (255, 255, 255))
+        screen.blit(label, (40, 130))
+        s = []
+        with open('data/results.txt') as f:
+            for line in f.readlines():
+                s.append(int(line.strip()))
+        label = font_type.render(f'{max(s)}', True, (255, 255, 255))
+        screen.blit(label, (512, 130))
+
+        label = font_type.render('Всего убито врагов:', True, (255, 255, 255))
+        screen.blit(label, (40, 190))
+        label = font_type.render(f'{sum(s)}', True, (255, 255, 255))
+        screen.blit(label, (355, 190))
+
+        with open('data/astronavt_score.txt') as f1:
+            k = f1.readline().strip()
+        label = font_type.render('Всего спасено астронавтов:', True, (255, 255, 255))
+        screen.blit(label, (40, 250))
+        label = font_type.render(str(k), True, (255, 255, 255))
+        screen.blit(label, (500, 250))
+
+
+        cur_sprites.draw(screen)
+        pygame.display.update()
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
