@@ -440,7 +440,196 @@ class Bonus(pygame.sprite.Sprite):
     def ret_image(self):
         return pygame.transform.scale(self.image, (self.image.get_width() // 2, self.image.get_height() // 2))
 
+class Boss(pygame.sprite.Sprite):
+    image1 = load_image('boss1.png')
+    bullet1 = load_image('boss1_bullet.png')
 
+    def __init__(self, hard, group):
+        super().__init__(group)
+        if hard == 1:
+            self.image = pygame.transform.scale(Boss.image1, (110, 79))
+            self.hp = 10
+            self.actions = [1, 2, 3]  # 1 - движение влево, 2 - движение вправо, 3 - выстрел
+        self.rect = self.image.get_rect()
+        self.rect.x = width // 2 - Boss.image1.get_width() // 2
+        self.rect.y = 100
+        self.update()
+
+    def update(self):
+        pass
+
+    def shot(self):
+        pass
+
+    def bullet_hit(self):
+        if self.hp == 0:
+            return 1
+        self.hp -= 1
+        return 0
+
+
+def boss_death():
+    pass
+
+
+def boss_fight(gayka_score, bonuces_on_spaceship):
+    bg = load_image('background.png')
+    font_type = pygame.font.Font(load_font('font.ttf'), 40)
+    label = font_type.render(
+        'Сражение с боссом!', True,
+        (255, 255, 255))
+    boss_sprites = pygame.sprite.Group()
+    boss = Boss(1, boss_sprites)
+    rect_t = label.get_rect()
+    rect_t.x = 0
+    rect_t.y = 250
+    FPS = 50
+    v2 = 300
+    clock = pygame.time.Clock()
+    t = True
+    while t:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                end_game()
+        screen.fill((0, 0, 0))
+        screen.blit(bg, (0, 0))
+        rect_t.x += v2 / FPS
+        screen.blit(label, (rect_t.x, rect_t.y))
+        if rect_t.x > width:
+            t = False
+        pygame.display.update()
+        clock.tick(FPS)
+    death_ship_FPS = 60
+    FPS = 50
+    v = 50
+    v_b = 400
+    shield_on_space_ship = False
+    place_for_blit_bonuces_on_spaceship = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
+    name_bonuces = [('bonus_2x.png', 1), ('shild.png', 2), ('bonus_gayka.png', 3)]
+    boss_heard = load_image('boss_heart.png')
+    pygame.mixer.init()
+    pygame.mixer.music.load('data/background.wav')
+    pygame.mixer.music.set_volume(0.01)
+    pygame.mixer.music.play(-1)
+    bullet_sound = pygame.mixer.Sound('data/laser.wav')
+    bullet_sound.set_volume(0.1)
+    space_ship_sprites = pygame.sprite.Group()
+    shot_sprites = pygame.sprite.Group()
+    enemy_bullet_sprites = pygame.sprite.Group()
+    space_ship = SpaceShip(space_ship_sprites)
+    death_sprites = pygame.sprite.Group()
+    bullet_sprites = pygame.sprite.Group()
+    death_sprites = pygame.sprite.Group()
+    death = False
+    running = True
+    start_time = time.time()
+    stage_of_death = 1
+    start_timecenter = time.time()
+    font_type = pygame.font.Font(load_font('font.ttf'), 30)
+    double_bullets = False
+    gaykaim = load_image('gayka.png')
+    stage = 1
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN and not death:
+                if event.key == pygame.K_SPACE:
+                    if double_bullets:
+                        Bullet((space_ship.ret_x_for_double_bullets_1(), space_ship.ret_y()), bullet_sprites)
+                        Bullet((space_ship.ret_x_for_double_bullets_2(), space_ship.ret_y()), bullet_sprites)
+                    else:
+                        Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
+                elif event.key == pygame.K_ESCAPE:
+                    pause_in_game()
+                    t = 1
+        screen.fill((0, 0, 0))
+        screen.blit(bg, (0, 0))
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            space_ship_sprites.update()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            space_ship_sprites.update()
+        space_ship_sprites.draw(screen)
+        if stage == 2:
+            stage = 1
+        else:
+            stage = 2
+        show_gayka_score()
+        screen.blit(gaykaim, (1, 40))
+        bullet_sprites.draw(screen)
+        bullet_sprites.update(v_b / FPS)
+        enemy_bullet_sprites.draw(screen)
+        enemy_bullet_sprites.update(v_b / FPS)
+        boss_sprites.update()
+        boss_sprites.draw(screen)
+        death_sprites.draw(screen)
+        death_sprites.update(stage_of_death)
+
+        label = font_type.render(f'{boss.hp}', True, (255, 255, 255))
+        screen.blit(label, (boss.rect.x + 15, boss.rect.y - 30))
+        screen.blit(boss_heard, (boss.rect.x + 50, boss.rect.y - 30))
+        if shield_on_space_ship:
+            if pygame.sprite.groupcollide(space_ship_sprites, enemy_bullet_sprites, False, True):
+                pass
+        else:
+            for i in enemy_bullet_sprites:
+                if pygame.sprite.collide_mask(space_ship, i):
+                    i.kill()
+                    death = True
+                    ship_death(space_ship.x(), space_ship.y(), death_sprites)
+                    break
+
+        if pygame.sprite.groupcollide(boss_sprites, bullet_sprites, False, True):
+            boss.bullet_hit()
+        if boss.hp == 0:
+            print('death')
+            boss_death()
+
+        if time.time() - start_time > 0.7:
+            start_time = time.time()
+            EnemyBullet((boss.rect.x + 15, boss.rect.y + 5), enemy_bullet_sprites, random.randint(-6, 6))
+        if time.time() - start_timecenter > 0.7:
+            start_timecenter = time.time()
+            EnemyBullet((boss.rect.x + 15, boss.rect.y + 5), enemy_bullet_sprites, 0)
+        if pygame.sprite.groupcollide(bullet_sprites, enemy_bullet_sprites, True, False):
+            pass
+        if death:
+            death_sprites.draw(screen)
+            death_sprites.update(stage_of_death)
+            clock.tick(death_ship_FPS)
+            stage_of_death += 1
+            if stage_of_death == 15:
+                game_over(gayka_score)
+                show_menu()
+        time_now = time.time()
+        for i in bonuces_on_spaceship:
+            if time_now - i[-1] > 15.0:
+                if i[1] == 1:
+                    double_bullets = False
+                elif i[1] == 2:
+                    space_ship.shield_off()
+                    shield_on_space_ship = False
+                else:
+                    double_gayka = False
+                del bonuces_on_spaceship[bonuces_on_spaceship.index(i)]
+            else:
+                if i[1] == 1:
+                    double_bullets = True
+                if i[1] == 2:
+                    shield_on_space_ship = True
+                    space_ship.shield()
+                if i[1] == 3:
+                    double_gayka = True
+                font_type = pygame.font.Font(load_font('font.ttf'), 25)
+                for j in range(len(bonuces_on_spaceship)):
+                    time_bonus = font_type.render(str(15 - int(time_now - bonuces_on_spaceship[j][-1])), True,
+                                                  (255, 255, 255))
+                    screen.blit(bonuces_on_spaceship[j][0].ret_image(), place_for_blit_bonuces_on_spaceship[j][0])
+                    screen.blit(time_bonus, place_for_blit_bonuces_on_spaceship[j][1])
+
+        clock.tick(FPS)
+        pygame.display.update()
 class Gayka(pygame.sprite.Sprite):
     image = load_image('gayka.png')
     v = 1
@@ -870,6 +1059,8 @@ def start_game():
                     Gayka(random.choice(roads), gayka_sprites)
                 if score % 200 == 0:
                     rocket_rain = True
+                if score % 30 == 0 and score != 0:
+                    boss_fight(gayka_score, bonuces_on_spaceship)
         if len(enemys) == 0 and not rocket_rain_begin:
             rocket_rain_begin = True
             for i in astronavts:
@@ -1071,6 +1262,22 @@ def start_game():
 
 enemys = []
 pos_enemys = []
+
+class EnemyBullet(pygame.sprite.Sprite):
+    image = load_image('boss1_bullet.png')
+
+    def __init__(self, pos, group, x_move):
+        super().__init__(group)
+        self.image = pygame.transform.rotate(load_image('boss1_bullet.png'), int(x_move * 5))
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+        self.x_move = x_move
+
+    def update(self, v):
+        self.rect.y += v
+        self.rect.x += self.x_move
 
 def pause_in_game():
     t=True
