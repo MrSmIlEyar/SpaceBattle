@@ -155,7 +155,7 @@ def shop():
                     all_gayka_score -= 300
                 dict_bought_ships['3'] = '0'
         elif dict_bought_ships['3'] == '0':
-            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35)
+            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
             if btn_3 == 1:
                 space_ship_skin = 'space_ship3.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield3.png'
@@ -164,11 +164,11 @@ def shop():
         elif dict_bought_ships['3'] == '2':
             space_ship_skin = 'space_ship3.png'
             spaceship_with_shield_skin = 'spaceship_with_shield3.png'
-            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35)
+            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
         screen.blit(space_ship3, (570, 70))
 
         if dict_bought_ships['4'] == '1':
-            btn_3 = draw(160, 445, '500', 100, 27, font_size=35)
+            btn_3 = draw(160, 445, '500', 100, 27, font_size=35,font_color='#000000')
             screen.blit(gaykaim, (235, 447))
             if btn_3 == 1 and all_gayka_score >= 500:
                 with open('data/gaykascore.txt', 'w') as f:
@@ -176,7 +176,7 @@ def shop():
                     all_gayka_score -= 500
                 dict_bought_ships['4'] = '0'
         elif dict_bought_ships['4'] == '0':
-            btn_3 = draw(125, 445, 'Выбрать', 140, 27, font_size=35)
+            btn_3 = draw(125, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
             if btn_3 == 1:
                 space_ship_skin = 'space_ship4.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield4.png'
@@ -185,7 +185,7 @@ def shop():
         elif dict_bought_ships['4']=='2':
             space_ship_skin = 'space_ship4.png'
             spaceship_with_shield_skin = 'spaceship_with_shield4.png'
-            btn_3 = draw(125, 445, 'Выбран', 140, 27, font_size=35)
+            btn_3 = draw(125, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
         screen.blit(space_ship4, (165, 320))
         with open('data/bougth_ships', 'w') as f1:
             for k in dict_bought_ships.keys():
@@ -239,6 +239,9 @@ def show_menu():
         if quit_btn == 1:
             pygame.quit()
             quit()
+        pravila_btn = draw(3, 0, 'Правила', 115, 28, font_size=25)
+        if pravila_btn == 1:
+            pravila()
         cur_sprites.update()
         cur_sprites.draw(screen)
         pygame.display.update()
@@ -628,6 +631,118 @@ def show_score():
     font_type = pygame.font.Font(load_font('font.ttf'), 40)
     text_score = font_type.render(str(score), True, (255, 255, 255))
     screen.blit(text_score, (1, 0))
+
+def pravila():
+    bgpravila = load_image('pravilabg.jpg')
+    image = load_image("cursor.png")
+    defolt_space_ship = load_image('space_ship1.png')
+    gaykaim = load_image('gayka.png')
+    astonavt = load_image('astronavt.png')
+    duble_bonus = load_image('bonus_2x.png')
+    shield = load_image('shild.png')
+    bon_gayka = load_image('bonus_gayka.png')
+    cur_sprites = pygame.sprite.Group()
+    cur = pygame.sprite.Sprite(cur_sprites)
+    cur.image = image
+    cur.rect = cur.image.get_rect()
+    pygame.mouse.set_visible(False)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEMOTION:
+                cur.rect.topleft = event.pos
+        screen.fill((0, 0, 0))
+        screen.blit(bgpravila, (0, 0))
+        back_btn = draw(10, 570, 'Назад', 60, 27, font_size=20)
+        if back_btn == 1:
+            show_menu()
+        font_type = pygame.font.Font(load_font('font.ttf'), 65)
+        label = font_type.render('Правила', True, (255, 255, 255))
+        screen.blit(label, (250, 5))
+
+        font_type = pygame.font.Font(load_font('font.ttf'), 22)
+        label = font_type.render('В этой игре вам, в роли космического корабля предстоит ', True, (255, 255, 255))
+        screen.blit(label, (15, 90))
+
+        label = font_type.render(
+            'сражаться с иноземными существами. Во время битвы сверху', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 125))
+
+        label = font_type.render(
+            'будут падать различные бонусы, гайки', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 160))
+        screen.blit(gaykaim,(480,157))
+
+        label = font_type.render(
+            '- валюта, за которую', True,
+            (255, 255, 255))
+        screen.blit(label, (515, 160))
+
+        label = font_type.render(
+            'можно покупать скины в магазине.', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 195))
+
+        label = font_type.render(
+            'Также при сражение может', True,
+            (255, 255, 255))
+        screen.blit(label, (435, 195))
+
+        label = font_type.render(
+            'пролетать астронавт, которого не надо убивать. За его поимку ты получаешь 10 гаек.', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 230))
+
+        label = font_type.render(
+            'получаешь 10 гаек. Во время игры сверху могут падать ракеты или', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 265))
+
+        label = font_type.render(
+            'даже ракетный дождь, стрелять в ракеты бесмысленно, от них', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 300))
+
+        label = font_type.render(
+            'можно только уворачиваться. В определенный момент времени', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 335))
+
+        label = font_type.render(
+            'вам придется сражаться с боссами, разной сложности.', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 370))
+
+        label = font_type.render(
+            'Бонусы выпадают при попадании в метеорит. Виды бонусов:', True,
+            (255, 255, 255))
+        screen.blit(label, (15, 405))
+        screen.blit(duble_bonus,(15,440))
+
+        label = font_type.render(
+            '- удваивания пуль.', True,
+            (255, 255, 255))
+        screen.blit(label, (70, 450))
+
+        screen.blit(shield,(15,500))
+        label = font_type.render(
+            '- щит, при соприкасании убивает вражескую цель.', True,
+            (255, 255, 255))
+        screen.blit(label, (70, 510))
+
+        screen.blit(bon_gayka,(310,440))
+        label = font_type.render(
+            '- удваивания получаемых гаек.', True,
+            (255, 255, 255))
+        screen.blit(label, (365, 450))
+
+        cur_sprites.draw(screen)
+        pygame.display.update()
+
 
 enemys = []
 
