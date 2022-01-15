@@ -788,8 +788,9 @@ def start_game():
     shield_on_space_ship = False
     bonuces_on_spaceship = []
     astronavts = []
+    double_gayka = False
     place_for_blit_bonuces_on_spaceship = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
-    name_bonuces = [('bonus_2x.png', 1), ('shild.png', 2)]
+    name_bonuces = [('bonus_2x.png', 1), ('shild.png', 2),('bonus_gayka.png',3)]
     roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
     rockets_in_rocket_rain = []
     roads_rocket = []
@@ -829,7 +830,7 @@ def start_game():
                 enemys.clear()
                 for i in monster_sprites:
                     i.kill()
-                Boss(1, v / FPS, boss_sprites)
+
                 boss_mode_first = False
                 clock.tick(FPS)
         else:
@@ -959,6 +960,9 @@ def start_game():
                 game_over(gayka_score)
                 show_menu()
         if pygame.sprite.groupcollide(gayka_sprites, space_ship_sprites, True, False):
+            if double_gayka:
+                gayka_score += 1
+                all_gayka_score += 1
             gayka_score += 1
             all_gayka_score += 1
             with open('data/gaykascore.txt', 'w') as f:
@@ -1011,15 +1015,17 @@ def start_game():
                 elif i[1] == 2:
                     space_ship.shield_off()
                     shield_on_space_ship = False
+                else:
+                    double_gayka = False
                 del bonuces_on_spaceship[bonuces_on_spaceship.index(i)]
             else:
                 if i[1] == 1:
                     double_bullets = True
-                elif i[1] == 2:
+                if i[1] == 2:
                     shield_on_space_ship = True
                     space_ship.shield()
-                elif i[1] == 3:
-                    gayka_rain = True
+                if i[1] == 3:
+                    double_gayka = True
         for j in range(len(bonuces_on_spaceship)):
             time_bonus = font_type.render(str(15 - int(time_now - bonuces_on_spaceship[j][-1])), True,
                                           (255, 255, 255))
