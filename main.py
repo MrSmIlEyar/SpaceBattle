@@ -80,6 +80,8 @@ def shop():
     space_ship2 = load_image('space_ship2.png')
     space_ship3 = load_image('space_ship3.png')
     space_ship4 = load_image('space_ship4.png')
+    space_ship5 = load_image('space_ship5.png')
+    space_ship6 = load_image('space_ship6.png')
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -104,6 +106,16 @@ def shop():
         else:
             color = pygame.Color('#C0F56E')
         pygame.draw.rect(screen, color, (120, 300, 160, 200), border_radius=12)
+        if dict_bought_ships['5'] == '2':
+            color = pygame.Color('#8EEB00')
+        else:
+            color = pygame.Color('#C0F56E')
+        pygame.draw.rect(screen, color, (320, 300, 160, 200), border_radius=12)
+        if dict_bought_ships['6'] == '2':
+            color = pygame.Color('#EB6A97')
+        else:
+            color = pygame.Color('#B253D6')
+        pygame.draw.rect(screen, color, (520, 300, 160, 200), border_radius=12)
         font_type = pygame.font.Font(load_font('font.ttf'), 37)
         text_score = font_type.render(str(all_gayka_score), True, (200, 200, 200))
         screen.blit(text_score, (37, 0))
@@ -140,7 +152,7 @@ def shop():
         elif dict_bought_ships['2'] == '2':
             space_ship_skin = 'space_ship2.png'
             spaceship_with_shield_skin = 'spaceship_with_shield2.png'
-            btn_2 = draw(325, 195, 'Выбран', 140, 27, font_size=35)
+            btn_2 = draw(325, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
         screen.blit(space_ship2, (370, 70))
 
         if dict_bought_ships['3'] == '1':
@@ -152,7 +164,7 @@ def shop():
                     all_gayka_score -= 300
                 dict_bought_ships['3'] = '0'
         elif dict_bought_ships['3'] == '0':
-            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35)
+            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
             if btn_3 == 1:
                 space_ship_skin = 'space_ship3.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield3.png'
@@ -161,20 +173,20 @@ def shop():
         elif dict_bought_ships['3'] == '2':
             space_ship_skin = 'space_ship3.png'
             spaceship_with_shield_skin = 'spaceship_with_shield3.png'
-            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35)
+            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
         screen.blit(space_ship3, (570, 70))
 
         if dict_bought_ships['4'] == '1':
-            btn_3 = draw(160, 445, '500', 100, 27, font_size=35)
+            btn_4 = draw(160, 445, '500', 100, 27, font_size=35,font_color='#000000')
             screen.blit(gaykaim, (235, 447))
-            if btn_3 == 1 and all_gayka_score >= 500:
+            if btn_4 == 1 and all_gayka_score >= 500:
                 with open('data/gaykascore.txt', 'w') as f:
                     f.write(str(all_gayka_score - 500))
                     all_gayka_score -= 500
                 dict_bought_ships['4'] = '0'
         elif dict_bought_ships['4'] == '0':
-            btn_3 = draw(125, 445, 'Выбрать', 140, 27, font_size=35)
-            if btn_3 == 1:
+            btn_4 = draw(125, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_4 == 1:
                 space_ship_skin = 'space_ship4.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield4.png'
                 dict_bought_ships['4'] = '2'
@@ -182,8 +194,54 @@ def shop():
         elif dict_bought_ships['4'] == '2':
             space_ship_skin = 'space_ship4.png'
             spaceship_with_shield_skin = 'spaceship_with_shield4.png'
-            btn_3 = draw(125, 445, 'Выбран', 140, 27, font_size=35)
+            btn_4 = draw(125, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
         screen.blit(space_ship4, (165, 320))
+        if dict_bought_ships['5'] == '1':
+            btn_5 = draw(325, 445, 'Недоступен', 170, 27, font_size=24,font_color='#000000')
+            if btn_5 == 1:
+                if 1 == 0:  # проверка на то, что выполнены все миссии
+                    space_ship_skin = 'space_ship5.png'
+                    spaceship_with_shield_skin = 'spaceship_with_shield5.png'
+                    dict_bought_ships['5'] = '2'
+                    delete_vybran('5')
+        elif dict_bought_ships['6'] == '0':
+            btn_5 = draw(325, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_5 == 1:
+                space_ship_skin = 'space_ship5.png'
+                spaceship_with_shield_skin = 'spaceship_with_shield5.png'
+                dict_bought_ships['5'] = '2'
+                delete_vybran('5')
+        elif dict_bought_ships['5'] == '2':
+            space_ship_skin = 'space_ship5.png'
+            spaceship_with_shield_skin = 'spaceship_with_shield5.png'
+            btn_5 = draw(325, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+        screen.blit(space_ship5, (365, 320))
+
+        if dict_bought_ships['6'] == '1':
+            btn_6 = draw(525, 445, '', 170, 27, font_size=35,font_color='#000000')
+            screen.blit(pygame.transform.scale(load_image('artefact1.png'), (40, 40)),(535,445))
+            screen.blit(pygame.transform.scale(load_image('artefact2.png'), (50, 42)), (575, 443))
+            screen.blit(pygame.transform.scale(load_image('artefact3.png'), (47, 40)), (622, 443))
+            if btn_6 == 1:
+                with open('data/artefact_done', 'r') as f:
+                    line = f.readline().split()
+                if line == ['2', '2', '2']:
+                    space_ship_skin = 'space_ship6.png'
+                    spaceship_with_shield_skin = 'spaceship_with_shield6.png'
+                    dict_bought_ships['6'] = '2'
+                    delete_vybran('6')
+        elif dict_bought_ships['6'] == '0':
+            btn_6 = draw(525, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            if btn_6 == 1:
+                space_ship_skin = 'space_ship6.png'
+                spaceship_with_shield_skin = 'spaceship_with_shield6.png'
+                dict_bought_ships['6'] = '2'
+                delete_vybran('6')
+        elif dict_bought_ships['6'] == '2':
+            space_ship_skin = 'space_ship6.png'
+            spaceship_with_shield_skin = 'spaceship_with_shield6.png'
+            btn_6 = draw(525, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+        screen.blit(space_ship6, (565, 320))
         with open('data/bougth_ships', 'w') as f1:
             for k in dict_bought_ships.keys():
                 f1.write(f'{k} {dict_bought_ships[k]}' + '\n')
@@ -291,6 +349,14 @@ def statistick():
         screen.blit(label, (40, 250))
         label = font_type.render(str(k), True, (255, 255, 255))
         screen.blit(label, (500, 250))
+
+        with open('data/game_done', 'r') as f2:
+            q = f2.readline().strip()
+        label = font_type.render('Ваши награды:', True, (255, 255, 255))
+        screen.blit(label, (40, 310))
+        if q == '1':
+            screen.blit(load_image('trofey.png'),(280,300))
+
 
         cur_sprites.draw(screen)
         pygame.display.update()
@@ -916,30 +982,103 @@ def boss_fight(gayka_score, bonuces_on_spaceship, world_number=1):
                     break
                 clock.tick(FPS)
                 pygame.display.update()
-
+            screen.blit(load_image(f'background{world_number}.png'), (0, 0))
+            space_ship = SpaceShip(space_ship_sprites)
             portal = load_image('portal.png')
             rect = portal.get_rect()
             rect.x = -portal.get_width()
             rect.y = 0
             FPS = 50
             v1 = 150
-            while True:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        end_game()
-                screen.fill((0, 0, 0))
-                screen.blit(bg, (0, 0))
-                boss_sprites.draw(screen)
-                space_ship_sprites.draw(screen)
-                screen.blit(portal, (rect.x, rect.y))
+            if world_number == 3:
+                if random.randint(1, 100) == 1:
+                    t_art = True
+                else:
+                    t_art = False
+                ret_y = -100
+                color = pygame.Color('#9966cc')
+                qw = True
+                if t_art:
+                    while True:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                end_game()
+                        screen.fill((0, 0, 0))
+                        screen.blit(load_image('background3.png'), (0, 0))
+                        with open('data/artefact_done', 'r') as f:
+                            line = f.readline().split()
+                            line[world_number - 1] = '2'
+                            aretf = ' '.join(line)
+                            with open('data/artefact_done', 'w') as f1:
+                                f1.write(aretf)
+                        pygame.draw.rect(screen, color, (330, ret_y, 120, 70))
+                        screen.blit(load_image(f'artefact{world_number}.png'), (360, ret_y + 20))
+                        if ret_y == 0:
+                            qw = False
+                        if qw:
+                            ret_y += 0.5
+                        else:
+                            ret_y -= 0.5
+                        if ret_y < -100:
+                            break
 
-                rect.x += v1 / FPS
-                clock.tick(FPS)
+                        rect.x += v1 / FPS
+                        clock.tick(FPS)
+                        pygame.display.update()
+                with open('data/game_done', 'w') as f:
+                    f.write(str(1))
+                font_type = pygame.font.Font(load_font('font.ttf'), 40)
+                label = font_type.render(
+                    'Вы прошли игру!', True, '#D44EA4')
+                screen.blit(label, (200, 170))
+                label = font_type.render(
+                    'Вы получаете награду ', True, '#D44EA4')
+                screen.blit(label, (140, 230))
+                screen.blit(load_image('trofey.png'), (620, 220))
                 pygame.display.update()
-                if rect.x >= 0:
-                    time.sleep(1)
-                    break
-            start_game(world=True, world_number=world_number)
+                time.sleep(4)
+                show_menu()
+            else:
+                if random.randint(1, 100) == 1:
+                    t_art = True
+                else:
+                    t_art = False
+                ret_y = -100
+                color = pygame.Color('#9966cc')
+                qw = True
+                while True:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            end_game()
+                    screen.fill((0, 0, 0))
+                    screen.blit(bg, (0, 0))
+                    boss_sprites.draw(screen)
+                    space_ship_sprites.draw(screen)
+                    screen.blit(portal, (rect.x, rect.y))
+                    if t_art:
+                        with open('data/artefact_done', 'r') as f:
+                            line = f.readline().split()
+                            line[world_number - 1] = '2'
+                            aretf = ' '.join(line)
+                            with open('data/artefact_done', 'w') as f1:
+                                f1.write(aretf)
+                        pygame.draw.rect(screen, color, (330, ret_y, 120, 70))
+                        screen.blit(load_image(f'artefact{world_number}.png'), (360, ret_y + 20))
+                        if ret_y == 0:
+                            qw = False
+                        if qw:
+                            ret_y += 0.5
+                        else:
+                            ret_y -= 0.5
+
+                    rect.x += v1 / FPS
+                    clock.tick(FPS)
+                    pygame.display.update()
+                    if rect.x >= 0:
+                        time.sleep(1)
+                        break
+                t_art = False
+                start_game(world=True, world_number=world_number)
 
         if time.time() - start_time > 1.3 / world_number:
             start_time = time.time()
