@@ -1174,6 +1174,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                     break
                 clock.tick(FPS)
                 pygame.display.update()
+            space_ship_sprites.remove(space_ship)
             screen.blit(load_image(f'background{world_number}.png'), (0, 0))
             space_ship = SpaceShip(space_ship_sprites)
             portal = load_image('portal.png')
@@ -1561,9 +1562,9 @@ def start_game(world=False, world_number=1):
                         Rocket(random.choice(roads), rocket_sprites)
                 if score % 10 == 0 and score != 0:
                     Gayka(random.choice(roads), gayka_sprites)
-                if score % 10 == 0:
+                if score % 100 == 0:
                     rocket_rain = True
-                if score % 100 == 0 and score != 0:
+                if score % 10 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
