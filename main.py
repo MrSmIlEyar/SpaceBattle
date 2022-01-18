@@ -1843,6 +1843,7 @@ pos_enemys = []
 
 
 def pause_in_game():
+    pygame.mixer.music.pause()
     t = True
     image = load_image("cursor.png")
     cur_sprites = pygame.sprite.Group()
@@ -1866,6 +1867,7 @@ def pause_in_game():
         # pygame.draw.rect(screen, butn_color, (255, 255, 280, 50))
         btn_back = draw(265, 265, 'Продолжить', 270, 35, font_size=40)
         if btn_back == 1:
+            pygame.mixer.music.unpause()
             t = False
         btn_menu = draw(345, 340, 'Меню', 120, 35, font_size=40)
         if btn_menu == 1:
