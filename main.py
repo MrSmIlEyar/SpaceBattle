@@ -218,11 +218,7 @@ def shop():
                     spaceship_with_shield_skin = 'spaceship_with_shield5.png'
                     dict_bought_ships['5'] = '2'
                     delete_vybran('5')
-                elif dict_bought_ships['4'] == '2':
-                    space_ship_skin = 'space_ship4.png'
-                    spaceship_with_shield_skin = 'spaceship_with_shield4.png'
-                    btn_4 = draw(125, 445, 'Выбран', 140, 27, font_size=35, font_color='#000000')
-        elif dict_bought_ships['6'] == '0':
+        elif dict_bought_ships['5'] == '0':
             btn_5 = draw(325, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
             if btn_5 == 1:
                 space_ship_skin = 'space_ship5.png'
@@ -450,7 +446,7 @@ def missions():
                     with open('data/missions_complete.txt', 'w') as f:
                         f.write('1')
                     with open('data/gaykascore.txt', 'w') as f:
-                        all_gayka_score += 50
+                        all_gayka_score += 5000
                         f.write(str(all_gayka_score))
                     box_open = True
             else:
@@ -1508,6 +1504,7 @@ def start_game(world=False, world_number=1):
                         Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
                     bullet_sound.play()
                 elif event.key == pygame.K_ESCAPE:
+                    pygame.mixer.pause()
                     pause_in_game()
                     t = 1
                     pygame.event.clear()
@@ -1528,7 +1525,7 @@ def start_game(world=False, world_number=1):
             stage = 2
         gayka_sprites.draw(screen)
         gayka_sprites.update()
-        if not rocket_rain:
+        if not rocket_rain_begin:
             monster_sprites.draw(screen)
             monster_sprites.update(v / FPS, gayka_score)
         bullet_sprites.draw(screen)
@@ -1561,9 +1558,9 @@ def start_game(world=False, world_number=1):
                         Rocket(random.choice(roads), rocket_sprites)
                 if score % 10 == 0 and score != 0:
                     Gayka(random.choice(roads), gayka_sprites)
-                if score % 200 == 0:
+                if score % 11 == 0:
                     rocket_rain = True
-                if score % 500 == 0 and score != 0:
+                if score % 30 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
@@ -1821,7 +1818,6 @@ def start_game(world=False, world_number=1):
                         rockets_in_rocket_rain.append(r)
                         roads_rocket.append(x)
             else:
-                score += 9
                 for i in range(9):
                     x = roads[i]
                     enemys.append(
