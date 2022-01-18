@@ -1750,7 +1750,8 @@ def start_game(world=False, world_number=1):
                 del astronavts[astronavts.index(i)]
         for i in astronavt_sprites:
             if pygame.sprite.collide_mask(space_ship, i):
-                gayka_score += 10
+                all_gayka_score += 10
+                score += 10
                 astronavt_score += 1
                 mon = Monster(i.x(), f'monster{random.randint(world_number * 2 - 1, world_number * 2)}.png',
                               monster_sprites)
