@@ -859,6 +859,7 @@ def pravila():
     cur.image = image
     cur.rect = cur.image.get_rect()
     pygame.mouse.set_visible(False)
+    q = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
