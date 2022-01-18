@@ -77,7 +77,7 @@ def print_text(message, x, y, font_color=('#DAF4EC'), font_size=35):
 
 
 def shop():
-    global space_ship_skin, all_gayka_score, dict_bought_ships, spaceship_with_shield_skin
+    global space_ship_skin, all_gayka_score, dict_bought_ships, spaceship_with_shield_skin, box_open
     bgshop_image = load_image('ShopBg.jpg')
     image = load_image("cursor.png")
     defolt_space_ship = load_image('space_ship1.png')
@@ -213,11 +213,15 @@ def shop():
         if dict_bought_ships['5'] == '1':
             btn_5 = draw(325, 445, 'Недоступен', 170, 27, font_size=24,font_color='#000000')
             if btn_5 == 1:
-                if 1 == 0:  # проверка на то, что выполнены все миссии
+                if box_open:  # проверка на то, что выполнены все миссии
                     space_ship_skin = 'space_ship5.png'
                     spaceship_with_shield_skin = 'spaceship_with_shield5.png'
                     dict_bought_ships['5'] = '2'
                     delete_vybran('5')
+                elif dict_bought_ships['4'] == '2':
+                    space_ship_skin = 'space_ship4.png'
+                    spaceship_with_shield_skin = 'spaceship_with_shield4.png'
+                    btn_4 = draw(125, 445, 'Выбран', 140, 27, font_size=35, font_color='#000000')
         elif dict_bought_ships['6'] == '0':
             btn_5 = draw(325, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
             if btn_5 == 1:
@@ -434,7 +438,7 @@ def missions():
                 font_type = pygame.font.Font(load_font('font.ttf'), 40)
             screen.blit(mission, (width // 2 - mission.get_width() // 2, 275))
         else:
-            with open('mission_complete.txt') as f:
+            with open('data/missions_complete.txt') as f:
                 flag = int(f.readline())
             if flag == 0:
                 if stage_of_open_box < 4:
@@ -443,9 +447,9 @@ def missions():
                                                (150, 150)),
                         (width // 2 - 75, height // 2 - 75))
                 else:
-                    with open('mission_complete.txt', 'w') as f:
+                    with open('data/missions_complete.txt', 'w') as f:
                         f.write('1')
-                    with open('gaykascore.txt', 'w') as f:
+                    with open('data/gaykascore.txt', 'w') as f:
                         all_gayka_score += 50
                         f.write(str(all_gayka_score))
                     box_open = True
@@ -570,6 +574,7 @@ def game_over(gayka_score):
         rect_t3.y = text3.get_height() + height
         v4 = -250
     FPS = 50
+    score = 0
     clock = pygame.time.Clock()
     while running:
         for event in pygame.event.get():
@@ -1095,9 +1100,11 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                         Bullet((space_ship.ret_x_for_double_bullets_2(), space_ship.ret_y()), bullet_sprites)
                     else:
                         Bullet((space_ship.ret_x(), space_ship.ret_y()), bullet_sprites)
+                    bullet_sound.play()
                 elif event.key == pygame.K_ESCAPE:
                     pause_in_game()
                     t = 1
+
         screen.fill((0, 0, 0))
         screen.blit(bg, (0, 0))
         keys = pygame.key.get_pressed()
@@ -1343,7 +1350,6 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                             f.write(','.join(m) + '\n' + str(missions_complete))
 
                 game_over(gayka_score)
-                sore = 0
                 show_menu()
         time_now = time.time()
         for i in bonuces_on_spaceship:
@@ -1538,7 +1544,7 @@ def start_game(world=False, world_number=1):
             score += 1
             k = random.randint(0, 100)
             if not rocket_rain:
-                if k == 12:
+                if k != 12:
                     mon = Monster(m[i][0].ret_x(),
                                   f'monster{random.randint(world_number * 2 - 1, world_number * 2)}.png',
                                   monster_sprites)
@@ -1557,7 +1563,7 @@ def start_game(world=False, world_number=1):
                     Gayka(random.choice(roads), gayka_sprites)
                 if score % 200 == 0:
                     rocket_rain = True
-                if score % 1000 == 0 and score != 0:
+                if score % 500 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
@@ -1792,8 +1798,6 @@ def start_game(world=False, world_number=1):
             screen.blit(time_bonus, place_for_blit_bonuces_on_spaceship[j][1])
         font_type = pygame.font.Font(load_font('font.ttf'), 35)
         if rocket_rain_begin:
-            if stage_of_mission == 3:
-                type_of_missions[stage_of_mission - 1][1] += 1
             if time_now - rocket_rain_begin_t < 10:
                 screen.blit(font_type.render(str(10 - int(time_now - rocket_rain_begin_t)), True, (255, 255, 255)),
                             (width // 2 - 15, 0))
@@ -1817,6 +1821,7 @@ def start_game(world=False, world_number=1):
                         rockets_in_rocket_rain.append(r)
                         roads_rocket.append(x)
             else:
+                score += 9
                 for i in range(9):
                     x = roads[i]
                     enemys.append(
