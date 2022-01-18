@@ -414,6 +414,9 @@ def missions():
                         create_particles(pos, sprites_of_particles)
         screen.fill((0, 0, 0))
         screen.blit(bgmission_image, (0, 0))
+        back_btn = draw(10, 570, 'Назад [ESC]', 60, 27, font_size=20)
+        if back_btn == 1:
+            show_menu()
         if missions_complete != 5:
             screen.blit(load_image(os.path.join('progress_bar', f'progress_bar_{stage_of_mission}.png')), (245, 150))
             screen.blit(load_image(os.path.join('box', 'box1.png')), (495, 125))
@@ -1558,9 +1561,9 @@ def start_game(world=False, world_number=1):
                         Rocket(random.choice(roads), rocket_sprites)
                 if score % 10 == 0 and score != 0:
                     Gayka(random.choice(roads), gayka_sprites)
-                if score % 11 == 0:
+                if score % 10 == 0:
                     rocket_rain = True
-                if score % 30 == 0 and score != 0:
+                if score % 100 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
@@ -1568,7 +1571,6 @@ def start_game(world=False, world_number=1):
             except Exception:
                 pass
         if len(enemys) == 0 and not rocket_rain_begin:
-            rocket_rain_score += 1
             print(rocket_rain_score)
             rocket_rain_begin = True
             for i in astronavts:
@@ -1818,6 +1820,7 @@ def start_game(world=False, world_number=1):
                         rockets_in_rocket_rain.append(r)
                         roads_rocket.append(x)
             else:
+                rocket_rain_score += 1
                 for i in range(9):
                     x = roads[i]
                     enemys.append(
