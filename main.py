@@ -727,7 +727,7 @@ class SpaceShip(pygame.sprite.Sprite):
         return self.rect.x + self.image.get_width() - 40
 
     def ret_x_for_fire(self):
-        return self.rect.x + 29
+        return self.rect.x + self.image.get_width() // 2 - load_image('anim_fire/fire_anim_1.png').get_width() // 2
 
     def shield(self):
         self.image = self.image_with_shield
@@ -1563,9 +1563,9 @@ def start_game(world=False, world_number=1):
                         Rocket(random.choice(roads), rocket_sprites)
                 if score % 10 == 0 and score != 0:
                     Gayka(random.choice(roads), gayka_sprites)
-                if score % 100 == 0:
+                if score % 150 == 0:
                     rocket_rain = True
-                if score % 10 == 0 and score != 0:
+                if score % 500 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
