@@ -212,20 +212,21 @@ def shop():
         screen.blit(space_ship4, (165, 320))
         if dict_bought_ships['5'] == '1':
             btn_5 = draw(325, 445, 'Недоступен', 170, 27, font_size=24,font_color='#000000')
-            if btn_5 == 1:
-                if box_open:  # проверка на то, что выполнены все миссии
-                    space_ship_skin = 'space_ship5.png'
-                    spaceship_with_shield_skin = 'spaceship_with_shield5.png'
-                    dict_bought_ships['5'] = '2'
-                    delete_vybran('5')
-        elif dict_bought_ships['5'] == '0':
+            with open('data/missions_complete.txt') as f:
+                flag = int(f.readline())
+            if flag:  # проверка на то, что выполнены все миссии
+                space_ship_skin = 'space_ship5.png'
+                spaceship_with_shield_skin = 'spaceship_with_shield5.png'
+                dict_bought_ships['5'] = '0'
+                delete_vybran('5')
+        if dict_bought_ships['5'] == '0':
             btn_5 = draw(325, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
             if btn_5 == 1:
                 space_ship_skin = 'space_ship5.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield5.png'
                 dict_bought_ships['5'] = '2'
                 delete_vybran('5')
-        elif dict_bought_ships['5'] == '2':
+        if dict_bought_ships['5'] == '2':
             space_ship_skin = 'space_ship5.png'
             spaceship_with_shield_skin = 'spaceship_with_shield5.png'
             btn_5 = draw(325, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
@@ -1030,6 +1031,69 @@ class Boss(pygame.sprite.Sprite):
         self.hp -= 1
         return 0
 
+def write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score):
+    global mission1, mission2, mission3, mission4, stage_of_mission, type_of_missions, missions_complete
+    if score > mission1 and missions_complete == 0:
+        mission1 = score
+        if mission1 >= 500:
+            stage_of_mission += 1
+            m = [str(stage_of_mission), '500', '0', '0', '0', '0']
+            missions_complete += 1
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+        else:
+            m = [str(stage_of_mission), str(score), '0', '0', '0', '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+
+    if astronavt_score > mission2 and missions_complete == 1:
+        mission2 = astronavt_score
+        print(mission2)
+        if mission2 >= 15:
+            missions_complete += 1
+            stage_of_mission += 1
+            m = [str(stage_of_mission), '500', '15', '0', '0', '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+        else:
+            print(astronavt_score)
+            m = [str(stage_of_mission), '500', str(astronavt_score), '0', '0', '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+
+    if missions_complete == 2:
+        if mission3 >= 30:
+            stage_of_mission += 1
+            missions_complete += 1
+            m = [str(stage_of_mission), '500', '15', '30', '0', '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+        else:
+            m = [str(stage_of_mission), '500', '15', str(rocket_rain_score), '0', '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+
+    if missions_complete == 3:
+        if mission3 >= 30:
+            stage_of_mission += 1
+            missions_complete += 1
+            m = [str(stage_of_mission), '500', '15', '30', '30', '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+        else:
+            m = [str(stage_of_mission), '500', '15', '30', str(meteor_score), '0']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+    if world_number == 3 and missions_complete == 4:
+        with open('data/game_done') as f:
+            flag = int(f.readline())
+        if flag:
+            stage_of_mission += 1
+            missions_complete += 1
+            m = [str(stage_of_mission), '500', '15', '30', '30', '1']
+            with open('data/missions.txt', 'w') as f:
+                f.write(','.join(m) + '\n' + str(missions_complete))
+
 
 def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                world_number=1):
@@ -1165,13 +1229,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                     (boss.x(), boss.y()))
                 stage_of_death += 1
                 if stage_of_death == 15:
-                    if missions_complete == 5:
-                        if world_number == 3:
-                            stage_of_mission += 1
-                            missions_complete += 1
-                            m = [str(stage_of_mission), '500', '15', '30', '30', '1']
-                            with open('data/missions.txt', 'w') as f:
-                                f.write(','.join(m) + '\n' + str(missions_complete))
+                    write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
                     break
                 clock.tick(FPS)
                 pygame.display.update()
@@ -1230,6 +1288,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                 screen.blit(label, (140, 230))
                 screen.blit(load_image('trofey.png'), (620, 220))
                 pygame.display.update()
+                write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
                 time.sleep(4)
                 show_menu()
             else:
@@ -1274,7 +1333,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                 t_art = False
                 start_game(world=True, world_number=world_number)
 
-        if time.time() - start_time > 1.3 / world_number:
+        if time.time() - start_time > 13 / world_number:
             start_time = time.time()
             r = space_ship.y() - boss.y() - boss.height()
             t = round(r / v_b * FPS)
@@ -1287,7 +1346,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
             r -= dop_r
             v_x = round(r2 / t)
             EnemyBullet((width // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, v_x)
-        if time.time() - start_timecenter > 1.3 / world_number:
+        if time.time() - start_timecenter > 13 / world_number:
             start_timecenter = time.time()
             EnemyBullet((width // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, 0)
         if pygame.sprite.groupcollide(bullet_sprites, enemy_bullet_sprites, True, False):
@@ -1298,58 +1357,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
             clock.tick(death_ship_FPS)
             stage_of_death += 1
             if stage_of_death == 15:
-                if score > mission1 and missions_complete == 0:
-                    mission1 = score
-                    if mission1 >= 500:
-                        stage_of_mission += 1
-                        m = [str(stage_of_mission), '500', '0', '0', '0', '0']
-                        missions_complete += 1
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        m = [str(stage_of_mission), str(score), '0', '0', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
-                if astronavt_score > mission2 and missions_complete == 1:
-                    mission2 = astronavt_score
-                    print(mission2)
-                    if mission2 >= 15:
-                        missions_complete += 1
-                        stage_of_mission += 1
-                        m = [str(stage_of_mission), '500', '15', '0', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        print(astronavt_score)
-                        m = [str(stage_of_mission), '500', str(astronavt_score), '0', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
-                if missions_complete == 2:
-                    if mission3 >= 30:
-                        stage_of_mission += 1
-                        missions_complete += 1
-                        m = [str(stage_of_mission), '500', '15', '30', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        m = [str(stage_of_mission), '500', '15', str(rocket_rain_score), '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
-                if missions_complete == 3:
-                    if mission3 >= 30:
-                        stage_of_mission += 1
-                        missions_complete += 1
-                        m = [str(stage_of_mission), '500', '15', '30', '30', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        m = [str(stage_of_mission), '500', '15', '30', str(meteor_score), '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
+                write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
                 game_over(gayka_score)
                 show_menu()
         time_now = time.time()
@@ -1565,7 +1573,7 @@ def start_game(world=False, world_number=1):
                     Gayka(random.choice(roads), gayka_sprites)
                 if score % 150 == 0:
                     rocket_rain = True
-                if score % 500 == 0 and score != 0:
+                if score % 20 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
@@ -1662,59 +1670,7 @@ def start_game(world=False, world_number=1):
             clock.tick(death_ship_FPS)
             stage_of_death += 1
             if stage_of_death == 15:
-                if score > mission1 and missions_complete == 0:
-                    mission1 = score
-                    if mission1 >= 500:
-                        stage_of_mission += 1
-                        m = [str(stage_of_mission), '500', '0', '0', '0', '0']
-                        missions_complete += 1
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        m = [str(stage_of_mission), str(score), '0', '0', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
-                if astronavt_score > mission2 and missions_complete == 1:
-                    mission2 = astronavt_score
-                    print(mission2)
-                    if mission2 >= 15:
-                        missions_complete += 1
-                        stage_of_mission += 1
-                        m = [str(stage_of_mission), '500', '15', '0', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        print(astronavt_score)
-                        m = [str(stage_of_mission), '500', str(astronavt_score), '0', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
-                if missions_complete == 2:
-                    mission3 = rocket_rain_score
-                    if mission3 >= 30:
-                        stage_of_mission += 1
-                        missions_complete += 1
-                        m = [str(stage_of_mission), '500', '15', '30', '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        m = [str(stage_of_mission), '500', '15', str(rocket_rain_score), '0', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
-                if missions_complete == 3:
-                    if mission3 >= 30:
-                        stage_of_mission += 1
-                        missions_complete += 1
-                        m = [str(stage_of_mission), '500', '15', '30', '30', '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-                    else:
-                        m = [str(stage_of_mission), '500', '15', '30', str(meteor_score), '0']
-                        with open('data/missions.txt', 'w') as f:
-                            f.write(','.join(m) + '\n' + str(missions_complete))
-
+                write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
                 game_over(gayka_score)
                 score = 0
                 show_menu()
