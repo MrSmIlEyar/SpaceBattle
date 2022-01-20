@@ -166,7 +166,7 @@ def shop():
         elif dict_bought_ships['2'] == '2':
             space_ship_skin = 'space_ship2.png'
             spaceship_with_shield_skin = 'spaceship_with_shield2.png'
-            btn_2 = draw(325, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+            btn_2 = draw(325, 195, 'Выбран', 140, 27, font_size=35, font_color='#000000')
         screen.blit(space_ship2, (370, 70))
 
         if dict_bought_ships['3'] == '1':
@@ -178,7 +178,7 @@ def shop():
                     all_gayka_score -= 300
                 dict_bought_ships['3'] = '0'
         elif dict_bought_ships['3'] == '0':
-            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            btn_3 = draw(525, 195, 'Выбрать', 140, 27, font_size=35, font_color='#000000')
             if btn_3 == 1:
                 space_ship_skin = 'space_ship3.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield3.png'
@@ -187,11 +187,11 @@ def shop():
         elif dict_bought_ships['3'] == '2':
             space_ship_skin = 'space_ship3.png'
             spaceship_with_shield_skin = 'spaceship_with_shield3.png'
-            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+            btn_3 = draw(525, 195, 'Выбран', 140, 27, font_size=35, font_color='#000000')
         screen.blit(space_ship3, (570, 70))
 
         if dict_bought_ships['4'] == '1':
-            btn_4 = draw(160, 445, '500', 100, 27, font_size=35,font_color='#000000')
+            btn_4 = draw(160, 445, '500', 100, 27, font_size=35, font_color='#000000')
             screen.blit(gaykaim, (235, 447))
             if btn_4 == 1 and all_gayka_score >= 500:
                 with open('data/gaykascore.txt', 'w') as f:
@@ -199,7 +199,7 @@ def shop():
                     all_gayka_score -= 500
                 dict_bought_ships['4'] = '0'
         elif dict_bought_ships['4'] == '0':
-            btn_4 = draw(125, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            btn_4 = draw(125, 445, 'Выбрать', 140, 27, font_size=35, font_color='#000000')
             if btn_4 == 1:
                 space_ship_skin = 'space_ship4.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield4.png'
@@ -208,10 +208,10 @@ def shop():
         elif dict_bought_ships['4'] == '2':
             space_ship_skin = 'space_ship4.png'
             spaceship_with_shield_skin = 'spaceship_with_shield4.png'
-            btn_4 = draw(125, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+            btn_4 = draw(125, 445, 'Выбран', 140, 27, font_size=35, font_color='#000000')
         screen.blit(space_ship4, (165, 320))
         if dict_bought_ships['5'] == '1':
-            btn_5 = draw(325, 445, 'Недоступен', 170, 27, font_size=24,font_color='#000000')
+            btn_5 = draw(325, 445, 'Недоступен', 170, 27, font_size=24, font_color='#000000')
             with open('data/missions_complete.txt') as f:
                 flag = int(f.readline())
             if flag:  # проверка на то, что выполнены все миссии
@@ -220,7 +220,7 @@ def shop():
                 dict_bought_ships['5'] = '0'
                 delete_vybran('5')
         if dict_bought_ships['5'] == '0':
-            btn_5 = draw(325, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            btn_5 = draw(325, 445, 'Выбрать', 140, 27, font_size=35, font_color='#000000')
             if btn_5 == 1:
                 space_ship_skin = 'space_ship5.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield5.png'
@@ -229,12 +229,12 @@ def shop():
         if dict_bought_ships['5'] == '2':
             space_ship_skin = 'space_ship5.png'
             spaceship_with_shield_skin = 'spaceship_with_shield5.png'
-            btn_5 = draw(325, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+            btn_5 = draw(325, 445, 'Выбран', 140, 27, font_size=35, font_color='#000000')
         screen.blit(space_ship5, (365, 320))
 
         if dict_bought_ships['6'] == '1':
-            btn_6 = draw(525, 445, '', 170, 27, font_size=35,font_color='#000000')
-            screen.blit(pygame.transform.scale(load_image('artefact1.png'), (40, 40)),(535,445))
+            btn_6 = draw(525, 445, '', 170, 27, font_size=35, font_color='#000000')
+            screen.blit(pygame.transform.scale(load_image('artefact1.png'), (40, 40)), (535, 445))
             screen.blit(pygame.transform.scale(load_image('artefact2.png'), (50, 42)), (575, 443))
             screen.blit(pygame.transform.scale(load_image('artefact3.png'), (47, 40)), (622, 443))
             if btn_6 == 1:
@@ -246,7 +246,7 @@ def shop():
                     dict_bought_ships['6'] = '2'
                     delete_vybran('6')
         elif dict_bought_ships['6'] == '0':
-            btn_6 = draw(525, 445, 'Выбрать', 140, 27, font_size=35,font_color='#000000')
+            btn_6 = draw(525, 445, 'Выбрать', 140, 27, font_size=35, font_color='#000000')
             if btn_6 == 1:
                 space_ship_skin = 'space_ship6.png'
                 spaceship_with_shield_skin = 'spaceship_with_shield6.png'
@@ -255,7 +255,7 @@ def shop():
         elif dict_bought_ships['6'] == '2':
             space_ship_skin = 'space_ship6.png'
             spaceship_with_shield_skin = 'spaceship_with_shield6.png'
-            btn_6 = draw(525, 445, 'Выбран', 140, 27, font_size=35,font_color='#000000')
+            btn_6 = draw(525, 445, 'Выбран', 140, 27, font_size=35, font_color='#000000')
         screen.blit(space_ship6, (565, 320))
         with open('data/bougth_ships', 'w') as f1:
             for k in dict_bought_ships.keys():
@@ -519,8 +519,7 @@ def statistick():
         label = font_type.render('Ваши награды:', True, (255, 255, 255))
         screen.blit(label, (40, 310))
         if q == '1':
-            screen.blit(load_image('trofey.png'),(280,300))
-
+            screen.blit(load_image('trofey.png'), (280, 300))
 
         cur_sprites.draw(screen)
         pygame.display.update()
@@ -1030,6 +1029,7 @@ class Boss(pygame.sprite.Sprite):
             return 1
         self.hp -= 1
         return 0
+
 
 def write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score):
     global mission1, mission2, mission3, mission4, stage_of_mission, type_of_missions, missions_complete
