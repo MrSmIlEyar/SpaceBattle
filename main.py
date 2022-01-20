@@ -7,7 +7,7 @@ import sys
 
 pygame.init()
 
-size = width, height = 801, 601
+size = WIDTH, HEIGHT = 801, 601
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Space Battle")
 space_ship_skin = 'space_ship1.png'
@@ -43,10 +43,10 @@ def load_font(name):
     return fullname
 
 
-def draw(x, y, message, width, height, font_size=35, font_color=(255, 255, 255)):
+def draw(x, y, message, WIDTH, HEIGHT, font_size=35, font_color=(255, 255, 255)):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
-    if x < mouse[0] < x + width and y < mouse[1] < y + height:
+    if x < mouse[0] < x + WIDTH and y < mouse[1] < y + HEIGHT:
         print_text(message, x, y, font_color=(50, 50, 50), font_size=font_size)
 
         if click[0] == 1:
@@ -336,7 +336,7 @@ type_of_missions = [['Убить 500 монстров в одной игре.', 
 
 missions_complete_1 = [500, 15, 30, 30]
 
-screen_rect = (0, 0, width, height)
+screen_rect = (0, 0, WIDTH, HEIGHT)
 
 
 class Particle(pygame.sprite.Sprite):
@@ -393,7 +393,7 @@ def missions():
     pygame.mouse.set_visible(False)
     font_type = pygame.font.Font(load_font('font.ttf'), 40)
     label = font_type.render('Миссии', True, (255, 255, 255))
-    screen.blit(label, (width // 2 - label.get_width() // 2, 0))
+    screen.blit(label, (WIDTH // 2 - label.get_width() // 2, 0))
     stage_of_open_box = 1
     sprites_of_particles = pygame.sprite.Group()
     clock = pygame.time.Clock()
@@ -422,21 +422,21 @@ def missions():
             screen.blit(load_image(os.path.join('progress_bar', f'progress_bar_{stage_of_mission}.png')), (245, 150))
             screen.blit(load_image(os.path.join('box', 'box1.png')), (495, 125))
             screen.blit(load_image(os.path.join('box', 'box1.png')), (495, 125))
-            screen.blit(label, (width // 2 - label.get_width() // 2, 0))
+            screen.blit(label, (WIDTH // 2 - label.get_width() // 2, 0))
             mission = font_type.render(type_of_missions[stage_of_mission - 1][0], True, (255, 255, 255))
             try:
                 mission_counter = font_type.render(
                     str(eval(f'mission{stage_of_mission}')) + '/' + str(missions_complete_1[stage_of_mission - 1]),
                     True,
                     (255, 255, 255))
-                screen.blit(mission_counter, (width // 2 - mission_counter.get_width() // 2, 350))
+                screen.blit(mission_counter, (WIDTH // 2 - mission_counter.get_width() // 2, 350))
             except Exception:
                 pass
-            if mission.get_width() > width:
+            if mission.get_width() > WIDTH:
                 font_type = pygame.font.Font(load_font('font.ttf'), 30)
                 mission = font_type.render(type_of_missions[stage_of_mission - 1][0], True, (255, 255, 255))
                 font_type = pygame.font.Font(load_font('font.ttf'), 40)
-            screen.blit(mission, (width // 2 - mission.get_width() // 2, 275))
+            screen.blit(mission, (WIDTH // 2 - mission.get_width() // 2, 275))
         else:
             with open('data/missions_complete.txt') as f:
                 flag = int(f.readline())
@@ -445,7 +445,7 @@ def missions():
                     screen.blit(
                         pygame.transform.scale(load_image(os.path.join('box', f'box{stage_of_open_box}.png')),
                                                (150, 150)),
-                        (width // 2 - 75, height // 2 - 75))
+                        (WIDTH // 2 - 75, HEIGHT // 2 - 75))
                 else:
                     with open('data/missions_complete.txt', 'w') as f:
                         f.write('1')
@@ -456,7 +456,7 @@ def missions():
             else:
                 font_type = pygame.font.Font(load_font('font.ttf'), 40)
                 l = font_type.render('Миссии выполнены!', True, (255, 255, 255))
-                screen.blit(l, (width // 2 - l.get_width() // 2, 250))
+                screen.blit(l, (WIDTH // 2 - l.get_width() // 2, 250))
         sprites_of_particles.draw(screen)
         sprites_of_particles.update()
         clock.tick(FPS)
@@ -550,7 +550,7 @@ def game_over(gayka_score):
     image2 = load_image(space_ship_skin)
     rect2 = image2.get_rect()
     rect2.y = -image2.get_height()
-    rect2.x = width // 2 - image2.get_width() // 2
+    rect2.x = WIDTH // 2 - image2.get_width() // 2
     v1 = 150
     v3 = 200
     v2 = -200
@@ -558,7 +558,7 @@ def game_over(gayka_score):
     message = f'Гаек собрано: {gayka_score}'
     text = font_type.render(message, True, '#ffffff')
     rect_t = text.get_rect()
-    rect_t.x = width
+    rect_t.x = WIDTH
     rect_t.y = 250
     message2 = f'Очков набрано: {score}'
     text2 = font_type.render(message2, True, '#ffffff')
@@ -569,8 +569,8 @@ def game_over(gayka_score):
         message3 = f'Новый рекорд!'
         text3 = font_type.render(message3, True, '#ffffff')
         rect_t3 = text3.get_rect()
-        rect_t3.x = width // 2 - text3.get_width() // 2
-        rect_t3.y = text3.get_height() + height
+        rect_t3.x = WIDTH // 2 - text3.get_width() // 2
+        rect_t3.y = text3.get_height() + HEIGHT
         v4 = -250
     FPS = 50
     score = 0
@@ -583,8 +583,8 @@ def game_over(gayka_score):
                 if v3 != 0 or v2 != 0 or v1 != 0:
                     v3 = v2 = v1 = v4 = 0
                     rect2.y = 150
-                    rect_t.x = width // 2 - text.get_width() // 2
-                    rect_t2.x = width // 2 - text2.get_width() // 2
+                    rect_t.x = WIDTH // 2 - text.get_width() // 2
+                    rect_t2.x = WIDTH // 2 - text2.get_width() // 2
                     if record:
                         rect_t3.y = 400
                 else:
@@ -597,11 +597,11 @@ def game_over(gayka_score):
             v1 = 0
         rect_t.x += v2 / FPS
         screen.blit(text, (rect_t.x, rect_t.y))
-        if rect_t.x <= width // 2 - text.get_width() // 2:
+        if rect_t.x <= WIDTH // 2 - text.get_width() // 2:
             v2 = 0
         rect_t2.x += v3 / FPS
         screen.blit(text2, (rect_t2.x, rect_t2.y))
-        if rect_t2.x >= (width // 2 - text2.get_width() // 2):
+        if rect_t2.x >= (WIDTH // 2 - text2.get_width() // 2):
             v3 = 0
         if record:
             rect_t3.y += v4 / FPS
@@ -694,13 +694,13 @@ class SpaceShip(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.type = 1
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = width // 2 - self.image.get_width() // 2
-        self.rect.y = height - self.image.get_height() - 25
+        self.rect.x = WIDTH // 2 - self.image.get_width() // 2
+        self.rect.y = HEIGHT - self.image.get_height() - 25
 
     def update(self, v):
         self.rect.x += v
-        if self.rect.x + self.image.get_width() > width:
-            self.rect.x = width - self.image.get_width()
+        if self.rect.x + self.image.get_width() > WIDTH:
+            self.rect.x = WIDTH - self.image.get_width()
         if self.rect.x < 0:
             self.rect.x = 0
 
@@ -755,7 +755,7 @@ class Monster(pygame.sprite.Sprite):
 
     def update(self, v, gayka_score):
         self.rect.y += v
-        if self.rect.y >= height - self.image.get_height():
+        if self.rect.y >= HEIGHT - self.image.get_height():
             game_over(gayka_score)
             score = 0
 
@@ -848,9 +848,7 @@ class Rocket(pygame.sprite.Sprite):
 def pravila():
     bgpravila = load_image('pravilabg.jpg')
     image = load_image("cursor.png")
-    defolt_space_ship = load_image('space_ship1.png')
     gaykaim = load_image('gayka.png')
-    astonavt = load_image('astronavt.png')
     duble_bonus = load_image('bonus_2x.png')
     shield = load_image('shild.png')
     bon_gayka = load_image('bonus_gayka.png')
@@ -859,7 +857,6 @@ def pravila():
     cur.image = image
     cur.rect = cur.image.get_rect()
     pygame.mouse.set_visible(False)
-    q = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1011,7 +1008,7 @@ class Boss(pygame.sprite.Sprite):
         else:
             self.hp = 10
         self.rect = self.image.get_rect()
-        self.rect.x = width // 2 - self.image.get_width() // 2
+        self.rect.x = WIDTH // 2 - self.image.get_width() // 2
         self.rect.y = 100
         self.update()
 
@@ -1021,7 +1018,7 @@ class Boss(pygame.sprite.Sprite):
     def y(self):
         return self.rect.y
 
-    def height(self):
+    def HEIGHT(self):
         return self.image.get_height()
 
     def bullet_hit(self):
@@ -1122,23 +1119,22 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
         screen.blit(bg, (0, 0))
         rect_t.x += v2 / FPS
         screen.blit(label, (rect_t.x, rect_t.y))
-        if rect_t.x > width:
+        if rect_t.x > WIDTH:
             t = False
         pygame.display.update()
         clock.tick(FPS)
-    death_ship_FPS = 60
+    DEATH_SHIP_FPS = 60
     FPS = 50
     v = 50
     v_b = 400
     shield_on_space_ship = False
-    place_for_blit_bonuces_on_spaceship = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
-    name_bonuces = [('bonus_2x.png', 1), ('shild.png', 2), ('bonus_gayka.png', 3)]
+    PLACE_FOR_BLIT_BONUCES_ON_SPACESHIP = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
+    NAME_BONUCES = [('bonus_2x.png', 1), ('shild.png', 2), ('bonus_gayka.png', 3)]
     boss_heard = load_image('boss_heart.png')
     pygame.mixer.init()
     bullet_sound = pygame.mixer.Sound('data/laser.wav')
     bullet_sound.set_volume(0.1)
     space_ship_sprites = pygame.sprite.Group()
-    shot_sprites = pygame.sprite.Group()
     enemy_bullet_sprites = pygame.sprite.Group()
     space_ship = SpaceShip(space_ship_sprites)
     death_sprites = pygame.sprite.Group()
@@ -1241,7 +1237,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
             rect.x = -portal.get_width()
             rect.y = 0
             FPS = 50
-            v1 = 150
+            V1 = 150
             if world_number == 3:
                 if random.randint(1, 100) == 1:
                     t_art = True
@@ -1274,7 +1270,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                         if ret_y < -100:
                             break
 
-                        rect.x += v1 / FPS
+                        rect.x += V1 / FPS
                         clock.tick(FPS)
                         pygame.display.update()
                 with open('data/game_done', 'w') as f:
@@ -1335,26 +1331,26 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
 
         if time.time() - start_time > 13 / world_number:
             start_time = time.time()
-            r = space_ship.y() - boss.y() - boss.height()
+            r = space_ship.y() - boss.y() - boss.HEIGHT()
             t = round(r / v_b * FPS)
             pos_sp_sh = space_ship.x() + load_image(space_ship_skin).get_width() // 2
-            center = round(width / 2)
+            center = round(WIDTH / 2)
             r2 = -1 * (center - pos_sp_sh)
             dop_r2 = math.sin(math.atan(r2 / r))
             r2 -= dop_r2
             dop_r = math.cos(math.atan(r2 / r))
             r -= dop_r
             v_x = round(r2 / t)
-            EnemyBullet((width // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, v_x)
+            EnemyBullet((WIDTH // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, v_x)
         if time.time() - start_timecenter > 13 / world_number:
             start_timecenter = time.time()
-            EnemyBullet((width // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, 0)
+            EnemyBullet((WIDTH // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, 0)
         if pygame.sprite.groupcollide(bullet_sprites, enemy_bullet_sprites, True, False):
             pass
         if death:
             death_sprites.draw(screen)
             death_sprites.update(stage_of_death)
-            clock.tick(death_ship_FPS)
+            clock.tick(DEATH_SHIP_FPS)
             stage_of_death += 1
             if stage_of_death == 15:
                 write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
@@ -1383,8 +1379,8 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                 for j in range(len(bonuces_on_spaceship)):
                     time_bonus = font_type.render(str(15 - int(time_now - bonuces_on_spaceship[j][-1])), True,
                                                   (255, 255, 255))
-                    screen.blit(bonuces_on_spaceship[j][0].ret_image(), place_for_blit_bonuces_on_spaceship[j][0])
-                    screen.blit(time_bonus, place_for_blit_bonuces_on_spaceship[j][1])
+                    screen.blit(bonuces_on_spaceship[j][0].ret_image(), PLACE_FOR_BLIT_BONUCES_ON_SPACESHIP[j][0])
+                    screen.blit(time_bonus, PLACE_FOR_BLIT_BONUCES_ON_SPACESHIP[j][1])
 
         clock.tick(FPS)
         pygame.display.update()
@@ -1438,7 +1434,7 @@ def start_game(world=False, world_number=1):
     gaykaim = load_image('gayka.png')
     world_number = world_number
     pygame.mouse.set_visible(False)
-    death_ship_FPS = 60
+    DEATH_SHIP_FPS = 60
     FPS = 50
     v = 99
     v_b = 400
@@ -1466,8 +1462,8 @@ def start_game(world=False, world_number=1):
     shield_on_space_ship = False
     bonuces_on_spaceship = []
     astronavts = []
-    place_for_blit_bonuces_on_spaceship = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
-    name_bonuces = [('bonus_2x.png', 1), ('shild.png', 2), ('bonus_gayka.png', 3)]
+    PLACE_FOR_BLIT_BONUCES_ON_SPACESHIP = [[(1, 75), (35, 75)], [(1, 120), (35, 120)], [(1, 165), (35, 165)]]
+    NAME_BONUCES = [('bonus_2x.png', 1), ('shild.png', 2), ('bonus_gayka.png', 3)]
     roads = [15, 100, 185, 270, 355, 440, 525, 610, 695]
     rockets_in_rocket_rain = []
     roads_rocket = []
@@ -1488,7 +1484,7 @@ def start_game(world=False, world_number=1):
         rect.x = 0
         rect.y = 0
         FPS = 50
-        v1 = 150
+        V1 = 150
         clock = pygame.time.Clock()
         while True:
             for event in pygame.event.get():
@@ -1502,7 +1498,7 @@ def start_game(world=False, world_number=1):
             rect.x += v1 / FPS
             clock.tick(FPS)
             pygame.display.update()
-            if rect.x >= width:
+            if rect.x >= WIDTH:
                 break
     while running:
         for event in pygame.event.get():
@@ -1591,7 +1587,7 @@ def start_game(world=False, world_number=1):
             label = font_type.render('Ракетный дождь!', True, (255, 255, 255))
             rect_t = label.get_rect()
             rect_t.x = -label.get_width()
-            rect_t.y = height // 2 - label.get_height()
+            rect_t.y = HEIGHT // 2 - label.get_height()
             FPS = 50
             while True:
                 for event in pygame.event.get():
@@ -1605,7 +1601,7 @@ def start_game(world=False, world_number=1):
                 screen.blit(label, (rect_t.x, rect_t.y))
                 rect_t.x += 10
                 clock.tick(FPS)
-                if rect_t.x >= width:
+                if rect_t.x >= WIDTH:
                     break
                 pygame.display.update()
             pygame.event.clear()
@@ -1616,7 +1612,7 @@ def start_game(world=False, world_number=1):
         if pygame.sprite.groupcollide(meteor_sprites, bullet_sprites, True, True):
             if stage_of_mission == 4:
                 type_of_missions[stage_of_mission - 1][1] += 1
-            name, type_b = random.choice(name_bonuces)
+            name, type_b = random.choice(NAME_BONUCES)
             bon = Bonus(xbonus + 10, ybonus + 10, name, type_b, bonus_sprites)
             meteor_active = False
             bonuces.append((bon, bon.ret_type()))
@@ -1667,7 +1663,7 @@ def start_game(world=False, world_number=1):
         if death:
             death_sprites.draw(screen)
             death_sprites.update(stage_of_death)
-            clock.tick(death_ship_FPS)
+            clock.tick(DEATH_SHIP_FPS)
             stage_of_death += 1
             if stage_of_death == 15:
                 write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
@@ -1699,7 +1695,7 @@ def start_game(world=False, world_number=1):
         if pygame.sprite.groupcollide(bullet_sprites, rocket_sprites, True, False):
             pass
         for i in astronavts:
-            if i.y() > height:
+            if i.y() > HEIGHT:
                 mon = Monster(i.x(), f'monster{random.randint(world_number * 2 - 1, world_number * 2)}.png',
                               monster_sprites)
                 enemys.append(mon)
@@ -1716,6 +1712,7 @@ def start_game(world=False, world_number=1):
         for i in bullet_sprites:
             for j in astronavt_sprites:
                 if pygame.sprite.collide_mask(i, j):
+                    write_missions_into_file(world_number, score, meteor_score, astronavt_score, rocket_rain_score)
                     game_over(gayka_score)
                     score = 0
                     show_menu()
@@ -1752,13 +1749,13 @@ def start_game(world=False, world_number=1):
         for j in range(len(bonuces_on_spaceship)):
             time_bonus = font_type.render(str(15 - int(time_now - bonuces_on_spaceship[j][-1])), True,
                                           (255, 255, 255))
-            screen.blit(bonuces_on_spaceship[j][0].ret_image(), place_for_blit_bonuces_on_spaceship[j][0])
-            screen.blit(time_bonus, place_for_blit_bonuces_on_spaceship[j][1])
+            screen.blit(bonuces_on_spaceship[j][0].ret_image(), PLACE_FOR_BLIT_BONUCES_ON_SPACESHIP[j][0])
+            screen.blit(time_bonus, PLACE_FOR_BLIT_BONUCES_ON_SPACESHIP[j][1])
         font_type = pygame.font.Font(load_font('font.ttf'), 35)
         if rocket_rain_begin:
             if time_now - rocket_rain_begin_t < 10:
                 screen.blit(font_type.render(str(10 - int(time_now - rocket_rain_begin_t)), True, (255, 255, 255)),
-                            (width // 2 - 15, 0))
+                            (WIDTH // 2 - 15, 0))
                 if len(rockets_in_rocket_rain) < 7:
                     x = random.choice(roads)
                     if x in roads_rocket:
@@ -1768,7 +1765,7 @@ def start_game(world=False, world_number=1):
                     rockets_in_rocket_rain.append(r)
                     roads_rocket.append(x)
                 for i in rockets_in_rocket_rain:
-                    if i.y() >= height:
+                    if i.y() >= HEIGHT:
                         del rockets_in_rocket_rain[rockets_in_rocket_rain.index(i)]
                         del roads_rocket[roads_rocket.index(i.x())]
                         x = random.choice(roads)
@@ -1819,9 +1816,7 @@ def pause_in_game():
         screen.blit(imagebg, (0, 0))
         color = pygame.Color('#007143')
         pygame.draw.rect(screen, color, (245, 170, 310, 260))
-        butn_color = pygame.Color('#67E46F')
         pygame.draw.rect(screen, color, (245, 170, 310, 260))
-        # pygame.draw.rect(screen, butn_color, (255, 255, 280, 50))
         btn_back = draw(265, 265, 'Продолжить', 270, 35, font_size=40)
         if btn_back == 1:
             pygame.mixer.music.unpause()
@@ -1839,17 +1834,17 @@ def pause_in_game():
 def pause():
     time_spawn = 3
     font_type = pygame.font.Font(load_font('font.ttf'), 50)
-    x = width // 2 - 155
+    x = WIDTH // 2 - 155
     while time_spawn > 0:
         label = font_type.render(str(time_spawn), True, (255, 255, 255))
-        screen.blit(label, (x, height // 2 - 100))
+        screen.blit(label, (x, HEIGHT // 2 - 100))
         pygame.display.update()
         x += 120
         time.sleep(1)
         time_spawn -= 1
     font_type = pygame.font.Font(load_font('font.ttf'), 70)
     label = font_type.render('Начали!', True, (255, 255, 255))
-    screen.blit(label, (width // 2 - 145, height // 2))
+    screen.blit(label, (WIDTH // 2 - 145, HEIGHT // 2))
     pygame.display.update()
     time.sleep(0.5)
     pygame.event.clear()
