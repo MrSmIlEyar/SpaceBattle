@@ -1573,7 +1573,7 @@ def start_game(world=False, world_number=1):
                     Gayka(random.choice(roads), gayka_sprites)
                 if score % 150 == 0:
                     rocket_rain = True
-                if score % 20 == 0 and score != 0:
+                if score % 1000 == 0 and score != 0:
                     boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score, rocket_rain_score,
                                world_number)
             try:
