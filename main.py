@@ -1237,7 +1237,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
             rect.x = -portal.get_width()
             rect.y = 0
             FPS = 50
-            V1 = 150
+            v1 = 150
             if world_number == 3:
                 if random.randint(1, 100) == 1:
                     t_art = True
@@ -1329,7 +1329,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
                 t_art = False
                 start_game(world=True, world_number=world_number)
 
-        if time.time() - start_time > 13 / world_number:
+        if time.time() - start_time > 1.3 / world_number:
             start_time = time.time()
             r = space_ship.y() - boss.y() - boss.HEIGHT()
             t = round(r / v_b * FPS)
@@ -1342,7 +1342,7 @@ def boss_fight(gayka_score, bonuces_on_spaceship, meteor_score, astronavt_score,
             r -= dop_r
             v_x = round(r2 / t)
             EnemyBullet((WIDTH // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, v_x)
-        if time.time() - start_timecenter > 13 / world_number:
+        if time.time() - start_timecenter > 1.3 / world_number:
             start_timecenter = time.time()
             EnemyBullet((WIDTH // 2 - 28, boss.rect.y + boss.image.get_height() // 2), enemy_bullet_sprites, 0)
         if pygame.sprite.groupcollide(bullet_sprites, enemy_bullet_sprites, True, False):
@@ -1484,7 +1484,7 @@ def start_game(world=False, world_number=1):
         rect.x = 0
         rect.y = 0
         FPS = 50
-        V1 = 150
+        v1 = 150
         clock = pygame.time.Clock()
         while True:
             for event in pygame.event.get():
